@@ -1,7 +1,8 @@
-doctype html 
-html 
-  head 
-    title Trang chu de bai hat 
-  
-  body 
-    h1 Trang chu de bai hat
+extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+
+block main
+  .container.my-3
+    .row
+      .col-12
+        +box-head(pageTitle)

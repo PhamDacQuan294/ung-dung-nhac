@@ -8,7 +8,7 @@ export const topics = async (req: Request, res: Response) => {
   });
 
   res.render("client/pages/topics/index", {
-    topics: topics
+    pageTitle: "Chủ đề bài hát"
   });
 }
 
