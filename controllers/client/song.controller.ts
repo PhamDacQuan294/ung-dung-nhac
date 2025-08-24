@@ -82,7 +82,7 @@ export const like = async (req: Request, res: Response) => {
 
   res.json({
     code: 200,
-    message: "Thanh cong!",
+    message: "Thành công!",
     like: newLike
   });
 };
