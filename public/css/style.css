@@ -129,7 +129,6 @@
 }
 /* End song-item */
 
-
 /* Singer-detail */
 .singer-detail .inner-title {
   font-size: 24px;
@@ -248,9 +247,9 @@
 .singer-detail .inner-desc .inner-text {
   font-size: 14px;
   padding: 10px 15px;
+  white-space: pre;
 }
 /* End Singer-detail */
-
 
 /* box-search */
 .box-search {
