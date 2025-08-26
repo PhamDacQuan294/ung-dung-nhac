@@ -3,6 +3,15 @@ extends ../../layouts/default.pug
 block main
   h1(class="mb-4") #{pageTitle}
 
+  .card.mb-3 
+    .card-header Bộ lọc và tìm kiếm
+    .card-body 
+      each item in filterStatus 
+        button(
+          class=`btn btn-sm ml-1 btn-outline-success ${item.class}`
+          button-status=item.status
+        ) #{item.name}
+
   .card.mb-3
     .card-header Danh sách
     .card-body
