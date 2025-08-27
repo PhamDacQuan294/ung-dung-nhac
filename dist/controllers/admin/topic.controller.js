@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.changeMulti = exports.changeStatus = exports.index = void 0;
+exports.createPost = exports.create = exports.deleteItem = exports.changeMulti = exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const filterStatus_1 = require("../../helpers/filterStatus");
 const search_1 = require("../../helpers/search");
 const pagination_1 = require("../../helpers/pagination");
+const config_1 = require("../../config/config");
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const statusFilters = (0, filterStatus_1.filterStatus)(req.query);
     let find = {
@@ -111,3 +112,22 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     res.redirect(redirectUrl);
 });
 exports.deleteItem = deleteItem;
+const create = (req, res) => {
+    res.render("admin/pages/topics/create", {
+        pageTitle: "Thêm mới sản phẩm"
+    });
+};
+exports.create = create;
+const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.body.position == "") {
+        const countProducts = yield topic_model_1.default.countDocuments();
+        req.body.position = countProducts + 1;
+    }
+    else {
+        req.body.position = parseInt(req.body.position);
+    }
+    const topic = new topic_model_1.default(req.body);
+    yield topic.save();
+    res.redirect(`/${config_1.systemConfig.prefixAdmin}/topics`);
+});
+exports.createPost = createPost;
