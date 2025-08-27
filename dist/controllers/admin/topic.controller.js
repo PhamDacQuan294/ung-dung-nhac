@@ -15,32 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const convertToSlug_1 = require("../../helpers/convertToSlug");
+const filterStatus_1 = require("../../helpers/filterStatus");
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let filterStatus = [
-        {
-            name: "Tất cả",
-            status: "",
-            class: ""
-        },
-        {
-            name: "Hoạt động",
-            status: "active",
-            class: ""
-        },
-        {
-            name: "Dừng hoạt động",
-            status: "inactive",
-            class: ""
-        }
-    ];
-    if (req.query.status) {
-        const index = filterStatus.findIndex(item => item.status == req.query.status);
-        filterStatus[index].class = "active";
-    }
-    else {
-        const index = filterStatus.findIndex(item => item.status == "");
-        filterStatus[index].class = "active";
-    }
+    const statusFilters = (0, filterStatus_1.filterStatus)(req.query);
     let find = {
         deleted: false
     };
@@ -62,7 +39,7 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render("admin/pages/topics/index", {
         pageTitle: "Quản lý chủ đề",
         topics: topics,
-        filterStatus: filterStatus,
+        filterStatus: statusFilters,
         keyword: keyword
     });
 });

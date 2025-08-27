@@ -1,36 +1,11 @@
 import { Request, Response } from "express";
 import Topic from "../../models/topic.model";
 import { convertToSlug } from "../../helpers/convertToSlug";
-import Song from "../../models/song.model";
-import Singer from "../../models/singer.model";
+import { filterStatus } from "../../helpers/filterStatus";
 
 // [GET] /admin/topics
 export const index = async (req: Request, res: Response) => {
-  let filterStatus = [
-    {
-      name: "Tất cả",
-      status: "",
-      class: ""
-    },
-    {
-      name: "Hoạt động",
-      status: "active",
-      class: ""
-    },
-    {
-      name: "Dừng hoạt động",
-      status: "inactive",
-      class: ""
-    }
-  ];
-
-  if(req.query.status) {
-    const index = filterStatus.findIndex(item => item.status == req.query.status);
-    filterStatus[index].class = "active";
-  } else {
-    const index = filterStatus.findIndex(item => item.status == "");
-    filterStatus[index].class = "active";
-  }
+  const statusFilters = filterStatus(req.query);
 
   let find = {
     deleted: false
@@ -44,7 +19,7 @@ export const index = async (req: Request, res: Response) => {
 
   if (req.query.keyword) {
     keyword = `${req.query.keyword}`;
-    
+
     const keywordRegex = new RegExp(keyword, "i");
 
     // Tạo ra slug không dấu, có thêm dấu - ngăn cách
@@ -63,7 +38,7 @@ export const index = async (req: Request, res: Response) => {
   res.render("admin/pages/topics/index", {
     pageTitle: "Quản lý chủ đề",
     topics: topics,
-    filterStatus: filterStatus,
+    filterStatus: statusFilters,
     keyword: keyword
   });
 }
