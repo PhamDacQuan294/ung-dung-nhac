@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.index = void 0;
+exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const filterStatus_1 = require("../../helpers/filterStatus");
 const search_1 = require("../../helpers/search");
@@ -50,3 +50,15 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.index = index;
+const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const status = req.params.status;
+    const id = req.params.id;
+    const redirectUrl = req.query.redirect;
+    yield topic_model_1.default.updateOne({
+        _id: id
+    }, {
+        status: status
+    });
+    res.redirect(redirectUrl);
+});
+exports.changeStatus = changeStatus;

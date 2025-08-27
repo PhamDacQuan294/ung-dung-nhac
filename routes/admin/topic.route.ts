@@ -5,4 +5,6 @@ import * as controller from "../../controllers/admin/topic.controller";
 
 router.get("/", controller.index);
 
+router.patch("/change-status/:status/:id", controller.changeStatus);
+
 export const topicRoutes: Router = router;

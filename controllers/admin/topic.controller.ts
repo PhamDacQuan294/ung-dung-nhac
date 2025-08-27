@@ -55,3 +55,18 @@ export const index = async (req: Request, res: Response) => {
     pagination: buildPagination
   });
 }
+
+// [PATCH] /admin/topics/change-status/:status/:id
+export const changeStatus = async (req: Request, res: Response) => {
+  const status: string = req.params.status;
+  const id: string = req.params.id;
+  const redirectUrl: string = req.query.redirect as string;
+
+  await Topic.updateOne({
+    _id: id
+  }, {
+    status: status
+  });
+
+  res.redirect(redirectUrl);
+}

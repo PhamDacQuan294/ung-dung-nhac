@@ -82,3 +82,12 @@ block main
                 ) Xóa
   
   +pagination(pagination)
+
+  form(
+    action=""
+    method="POST"
+    id="form-change-status"
+    data-path=`/${prefixAdmin}/topics/change-status`
+  )
+
+  script(src="/admin/js/topic.js")
