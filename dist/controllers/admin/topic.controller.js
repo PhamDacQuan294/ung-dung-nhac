@@ -31,12 +31,27 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             { slug: searchObj.stringSlugRegex }
         ];
     }
-    const topics = yield topic_model_1.default.find(find);
+    let objectPagination = {
+        currentPage: 1,
+        limitItems: 2,
+        skip: 0,
+    };
+    if (req.query.page) {
+        objectPagination.currentPage = parseInt(req.query.page, 10);
+    }
+    objectPagination["skip"] = (objectPagination.currentPage - 1) * objectPagination.limitItems;
+    const countTopics = yield topic_model_1.default.countDocuments(find);
+    const totalPage = Math.ceil(countTopics / objectPagination.limitItems);
+    objectPagination["totalPage"] = totalPage;
+    const topics = yield topic_model_1.default.find(find)
+        .limit(objectPagination.limitItems)
+        .skip(objectPagination.skip);
     res.render("admin/pages/topics/index", {
         pageTitle: "Quản lý chủ đề",
         topics: topics,
         filterStatus: statusFilters,
-        keyword: searchObj ? searchObj.keyword : ""
+        keyword: searchObj ? searchObj.keyword : "",
+        pagination: objectPagination
     });
 });
 exports.index = index;
