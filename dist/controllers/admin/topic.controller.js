@@ -60,6 +60,7 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }, {
         status: status
     });
+    req.flash("success", "Cập nhật trạng thái thành công!");
     res.redirect(redirectUrl);
 });
 exports.changeStatus = changeStatus;
@@ -70,15 +71,18 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     switch (type) {
         case "active":
             yield topic_model_1.default.updateMany({ _id: { $in: ids } }, { status: "active" });
+            req.flash("success", `Cập nhật trạng thái thành công ${ids.length} sản phẩm!`);
             break;
         case "inactive":
             yield topic_model_1.default.updateMany({ _id: { $in: ids } }, { status: "inactive" });
+            req.flash("success", `Cập nhật trạng thái thành công ${ids.length} sản phẩm!`);
             break;
         case "delete-all":
             yield topic_model_1.default.updateMany({ _id: { $in: ids } }, {
                 deleted: true,
                 deletedAt: new Date()
             });
+            req.flash("success", `Đã xoá thành công ${ids.length} sản phẩm!`);
             break;
         case "change-position":
             for (const item of ids) {
@@ -88,6 +92,7 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     position: position
                 });
             }
+            req.flash("success", `Thay đổi vị trí thành công ${ids.length} sản phẩm!`);
             break;
         default:
             break;
@@ -102,6 +107,7 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         deleted: true,
         deletedAt: new Date()
     });
+    req.flash("success", `Đã xoá thành công sản phẩm!`);
     res.redirect(redirectUrl);
 });
 exports.deleteItem = deleteItem;

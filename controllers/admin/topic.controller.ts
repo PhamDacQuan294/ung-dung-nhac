@@ -4,6 +4,7 @@ import { filterStatus } from "../../helpers/filterStatus";
 import { objectSearh } from "../../helpers/search";
 import { objectPagination } from "../../helpers/pagination";
 
+
 // [GET] /admin/topics
 export const index = async (req: Request, res: Response) => {
   const statusFilters = filterStatus(req.query);
@@ -69,6 +70,8 @@ export const changeStatus = async (req: Request, res: Response) => {
     status: status
   });
 
+  (req as any).flash("success", "Cập nhật trạng thái thành công!");
+
   res.redirect(redirectUrl);
 }
 
@@ -81,15 +84,18 @@ export const changeMulti = async (req: Request, res: Response) => {
   switch (type) {
     case "active":
       await Topic.updateMany({ _id: { $in: ids } }, { status: "active" });
+      (req as any).flash("success", `Cập nhật trạng thái thành công ${ids.length} sản phẩm!`);
       break;
     case "inactive":
       await Topic.updateMany({ _id: { $in: ids } }, { status: "inactive" });
+      (req as any).flash("success", `Cập nhật trạng thái thành công ${ids.length} sản phẩm!`);
       break;
     case "delete-all":
       await Topic.updateMany({ _id: { $in: ids } }, {
         deleted: true,
         deletedAt: new Date()
       });
+      (req as any).flash("success", `Đã xoá thành công ${ids.length} sản phẩm!`);
       break;
     case "change-position":
       for (const item of ids) {
@@ -99,6 +105,7 @@ export const changeMulti = async (req: Request, res: Response) => {
           position: position
         });
       }
+      (req as any).flash("success", `Thay đổi vị trí thành công ${ids.length} sản phẩm!`);
       break;
     default:
       break;
@@ -116,6 +123,8 @@ export const deleteItem = async (req: Request, res: Response) => {
     deleted: true,
     deletedAt: new Date()
   });
+
+  (req as any).flash("success", `Đã xoá thành công sản phẩm!`);
 
   res.redirect(redirectUrl);
 }
