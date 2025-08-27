@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Topic from "../../models/topic.model";
 import { filterStatus } from "../../helpers/filterStatus";
 import { objectSearh } from "../../helpers/search";
-import { skip } from "node:test";
+import { objectPagination } from "../../helpers/pagination";
 
 // [GET] /admin/topics
 export const index = async (req: Request, res: Response) => {
@@ -28,33 +28,30 @@ export const index = async (req: Request, res: Response) => {
   // End search
   
   // Pagination
-  let objectPagination = {
-    currentPage: 1,
-    limitItems: 2,
-    skip: 0,
-  };
-
-  if(req.query.page) {
-    objectPagination.currentPage = parseInt(req.query.page as string, 10);
-  }
-
-  objectPagination["skip"]= (objectPagination.currentPage - 1) * objectPagination.limitItems;
-
   const countTopics = await Topic.countDocuments(find);
-  const totalPage = Math.ceil(countTopics/objectPagination.limitItems);
-  objectPagination["totalPage"] = totalPage;
+
+  let buildPagination = objectPagination(
+    {
+      currentPage: 1,
+      limitItems: 2,
+      skip: 0
+    },
+    req.query,
+    countTopics
+  )
+
   // End pagination
 
 
   const topics = await Topic.find(find)
-  .limit(objectPagination.limitItems)
-  .skip(objectPagination.skip);
+  .limit(buildPagination.limitItems)
+  .skip(buildPagination.skip);
 
   res.render("admin/pages/topics/index", {
     pageTitle: "Quản lý chủ đề",
     topics: topics,
     filterStatus: statusFilters,
     keyword: searchObj ? searchObj.keyword : "",
-    pagination: objectPagination
+    pagination: buildPagination
   });
 }

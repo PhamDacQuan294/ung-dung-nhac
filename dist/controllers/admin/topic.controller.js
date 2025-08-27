@@ -16,6 +16,7 @@ exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const filterStatus_1 = require("../../helpers/filterStatus");
 const search_1 = require("../../helpers/search");
+const pagination_1 = require("../../helpers/pagination");
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const statusFilters = (0, filterStatus_1.filterStatus)(req.query);
     let find = {
@@ -31,27 +32,21 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             { slug: searchObj.stringSlugRegex }
         ];
     }
-    let objectPagination = {
+    const countTopics = yield topic_model_1.default.countDocuments(find);
+    let buildPagination = (0, pagination_1.objectPagination)({
         currentPage: 1,
         limitItems: 2,
-        skip: 0,
-    };
-    if (req.query.page) {
-        objectPagination.currentPage = parseInt(req.query.page, 10);
-    }
-    objectPagination["skip"] = (objectPagination.currentPage - 1) * objectPagination.limitItems;
-    const countTopics = yield topic_model_1.default.countDocuments(find);
-    const totalPage = Math.ceil(countTopics / objectPagination.limitItems);
-    objectPagination["totalPage"] = totalPage;
+        skip: 0
+    }, req.query, countTopics);
     const topics = yield topic_model_1.default.find(find)
-        .limit(objectPagination.limitItems)
-        .skip(objectPagination.skip);
+        .limit(buildPagination.limitItems)
+        .skip(buildPagination.skip);
     res.render("admin/pages/topics/index", {
         pageTitle: "Quản lý chủ đề",
         topics: topics,
         filterStatus: statusFilters,
         keyword: searchObj ? searchObj.keyword : "",
-        pagination: objectPagination
+        pagination: buildPagination
     });
 });
 exports.index = index;

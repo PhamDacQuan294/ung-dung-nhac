@@ -42,8 +42,10 @@ if(buttonsStatus.length > 0) {
       
       if(status) {
         url.searchParams.set("status", status);
+        url.searchParams.set("page", 1);
       } else {
         url.searchParams.delete("status");
+        url.searchParams.set("page", 1);
       }
 
       window.location.href = url.href;
@@ -63,8 +65,10 @@ if(formSearch) {
 
     if(keyword) {
       url.searchParams.set("keyword", keyword);
+      url.searchParams.set("page", 1);
     } else {
       url.searchParams.delete("keyword");
+      url.searchParams.set("page", 1);
     }
     window.location.href = url.href;
   });
