@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
-const convertToSlug_1 = require("../../helpers/convertToSlug");
 const filterStatus_1 = require("../../helpers/filterStatus");
+const search_1 = require("../../helpers/search");
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const statusFilters = (0, filterStatus_1.filterStatus)(req.query);
     let find = {
@@ -24,15 +24,11 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.query.status) {
         find["status"] = req.query.status;
     }
-    let keyword = "";
-    if (req.query.keyword) {
-        keyword = `${req.query.keyword}`;
-        const keywordRegex = new RegExp(keyword, "i");
-        const stringSlug = (0, convertToSlug_1.convertToSlug)(keyword);
-        const stringSlugRegex = new RegExp(stringSlug, "i");
+    const searchObj = (0, search_1.objectSearh)(req.query);
+    if (searchObj) {
         find["$or"] = [
-            { title: keywordRegex },
-            { slug: stringSlugRegex }
+            { title: searchObj.keywordRegex },
+            { slug: searchObj.stringSlugRegex }
         ];
     }
     const topics = yield topic_model_1.default.find(find);
@@ -40,7 +36,7 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         pageTitle: "Quản lý chủ đề",
         topics: topics,
         filterStatus: statusFilters,
-        keyword: keyword
+        keyword: searchObj ? searchObj.keyword : ""
     });
 });
 exports.index = index;
