@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
+const convertToSlug_1 = require("../../helpers/convertToSlug");
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let filterStatus = [
         {
@@ -46,11 +47,23 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.query.status) {
         find["status"] = req.query.status;
     }
+    let keyword = "";
+    if (req.query.keyword) {
+        keyword = `${req.query.keyword}`;
+        const keywordRegex = new RegExp(keyword, "i");
+        const stringSlug = (0, convertToSlug_1.convertToSlug)(keyword);
+        const stringSlugRegex = new RegExp(stringSlug, "i");
+        find["$or"] = [
+            { title: keywordRegex },
+            { slug: stringSlugRegex }
+        ];
+    }
     const topics = yield topic_model_1.default.find(find);
     res.render("admin/pages/topics/index", {
         pageTitle: "Quản lý chủ đề",
         topics: topics,
-        filterStatus: filterStatus
+        filterStatus: filterStatus,
+        keyword: keyword
     });
 });
 exports.index = index;
