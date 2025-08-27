@@ -73,6 +73,12 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         case "inactive":
             yield topic_model_1.default.updateMany({ _id: { $in: ids } }, { status: "inactive" });
             break;
+        case "delete-all":
+            yield topic_model_1.default.updateMany({ _id: { $in: ids } }, {
+                deleted: true,
+                deletedAt: new Date()
+            });
+            break;
         default:
             break;
     }

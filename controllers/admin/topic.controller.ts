@@ -84,6 +84,12 @@ export const changeMulti = async (req: Request, res: Response) => {
     case "inactive":
       await Topic.updateMany({ _id: { $in: ids } }, { status: "inactive" });
       break;
+    case "delete-all":
+      await Topic.updateMany({ _id: { $in: ids } }, {
+        deleted: true,
+        deletedAt: new Date()
+      });
+      break;
     default:
       break;
   }
