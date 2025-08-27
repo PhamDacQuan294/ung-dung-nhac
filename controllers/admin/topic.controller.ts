@@ -90,3 +90,16 @@ export const changeMulti = async (req: Request, res: Response) => {
 
   res.redirect(redirectUrl);
 }
+
+// [DELETE] /admin/topics/delete/:id
+export const deleteItem = async (req: Request, res: Response) => {
+  const id: string = req.params.id;
+  const redirectUrl: string = req.query.redirect as string;
+
+  await Topic.updateOne({ _id: id }, {
+    deleted: true,
+    deletedAt: new Date()
+  });
+
+  res.redirect(redirectUrl);
+}

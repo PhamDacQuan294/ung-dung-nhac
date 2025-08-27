@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeMulti = exports.changeStatus = exports.index = void 0;
+exports.deleteItem = exports.changeMulti = exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const filterStatus_1 = require("../../helpers/filterStatus");
 const search_1 = require("../../helpers/search");
@@ -79,3 +79,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     res.redirect(redirectUrl);
 });
 exports.changeMulti = changeMulti;
+const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const redirectUrl = req.query.redirect;
+    yield topic_model_1.default.updateOne({ _id: id }, {
+        deleted: true,
+        deletedAt: new Date()
+    });
+    res.redirect(redirectUrl);
+});
+exports.deleteItem = deleteItem;
