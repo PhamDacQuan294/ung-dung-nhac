@@ -39,6 +39,7 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         skip: 0
     }, req.query, countTopics);
     const topics = yield topic_model_1.default.find(find)
+        .sort({ position: "desc" })
         .limit(buildPagination.limitItems)
         .skip(buildPagination.skip);
     res.render("admin/pages/topics/index", {
@@ -78,6 +79,15 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 deleted: true,
                 deletedAt: new Date()
             });
+            break;
+        case "change-position":
+            for (const item of ids) {
+                let [id, position] = item.split("-");
+                position = parseInt(position);
+                yield topic_model_1.default.updateOne({ _id: id }, {
+                    position: position
+                });
+            }
             break;
         default:
             break;

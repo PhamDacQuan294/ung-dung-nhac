@@ -44,6 +44,7 @@ export const index = async (req: Request, res: Response) => {
 
 
   const topics = await Topic.find(find)
+  .sort({ position: "desc" })
   .limit(buildPagination.limitItems)
   .skip(buildPagination.skip);
 
@@ -89,6 +90,15 @@ export const changeMulti = async (req: Request, res: Response) => {
         deleted: true,
         deletedAt: new Date()
       });
+      break;
+    case "change-position":
+      for (const item of ids) {
+        let [id, position] = item.split("-");
+        position = parseInt(position);
+        await Topic.updateOne({ _id: id }, {
+          position: position
+        });
+      }
       break;
     default:
       break;

@@ -40,6 +40,7 @@ block main
             th Hình ảnh
             th Tiêu đề
             th Trạng thái
+            th Vị trí
             th Hành động
         tbody
           each item, index in topics
@@ -76,6 +77,14 @@ block main
                     button-change-status
                     class="badge badge-danger"
                   ) Dừng hoạt động
+              td 
+                input(
+                  type="number"
+                  value=item.position 
+                  style="width: 60px"
+                  min="1"
+                  name="position"
+                )
               td
                 a(
                   class="btn btn-secondary btn-sm"
