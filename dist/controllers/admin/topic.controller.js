@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeStatus = exports.index = void 0;
+exports.changeMulti = exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const filterStatus_1 = require("../../helpers/filterStatus");
 const search_1 = require("../../helpers/search");
@@ -62,3 +62,20 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     res.redirect(redirectUrl);
 });
 exports.changeStatus = changeStatus;
+const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const type = req.body.type;
+    const ids = req.body.ids.split(", ");
+    const redirectUrl = req.query.redirect;
+    switch (type) {
+        case "active":
+            yield topic_model_1.default.updateMany({ _id: { $in: ids } }, { status: "active" });
+            break;
+        case "inactive":
+            yield topic_model_1.default.updateMany({ _id: { $in: ids } }, { status: "inactive" });
+            break;
+        default:
+            break;
+    }
+    res.redirect(redirectUrl);
+});
+exports.changeMulti = changeMulti;
