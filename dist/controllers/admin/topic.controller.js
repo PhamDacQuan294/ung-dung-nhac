@@ -39,8 +39,17 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         limitItems: 2,
         skip: 0
     }, req.query, countTopics);
+    let sort = {};
+    if (req.query.sortKey && req.query.sortValue) {
+        const sortKey = String(req.query.sortKey);
+        const sortValue = req.query.sortValue === "desc" ? -1 : 1;
+        sort[sortKey] = sortValue;
+    }
+    else {
+        sort["position"] = -1;
+    }
     const topics = yield topic_model_1.default.find(find)
-        .sort({ position: "desc" })
+        .sort(sort)
         .limit(buildPagination.limitItems)
         .skip(buildPagination.skip);
     res.render("admin/pages/topics/index", {

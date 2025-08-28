@@ -13,5 +13,5 @@ block main
             img(src=topic.avatar)
             div(class="card-body")
               h5(class="card-title") #{topic.title}
-              p(class="card-text") #{topic.description}
+              p(class="card-text") !{topic.description}
               a(href=`/songs/${topic.slug}` class="btn btn-primary") Xem chi tiết

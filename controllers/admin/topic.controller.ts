@@ -43,9 +43,20 @@ export const index = async (req: Request, res: Response) => {
 
   // End pagination
 
+  // Sort
+  let sort: any = {};
+
+  if (req.query.sortKey && req.query.sortValue) {
+    const sortKey = String(req.query.sortKey);
+    const sortValue = req.query.sortValue === "desc" ? -1 : 1; // MongoDB cần 1 hoặc -1
+    sort[sortKey] = sortValue;
+  } else {
+    sort["position"] = -1; // mặc định sort giảm dần theo position
+  }
+  // End Sort
 
   const topics = await Topic.find(find)
-  .sort({ position: "desc" })
+  .sort(sort)
   .limit(buildPagination.limitItems)
   .skip(buildPagination.skip);
   

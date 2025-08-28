@@ -3,6 +3,7 @@ include ../../mixins/filter-status.pug
 include ../../mixins/search.pug
 include ../../mixins/pagination.pug
 include ../../mixins/form-change-multi.pug
+include ../../mixins/sort.pug
 
 block main
   h1(class="mb-4") #{pageTitle}
@@ -15,6 +16,13 @@ block main
           +filter-status(filterStatus)
         .col-6 
           +search(keyword)
+          
+  .card.mb-3 
+    .card-header Sắp xếp
+    .card-body 
+      .row 
+        .col-4 
+          +sort()
 
   .card.mb-3
     .card-header Danh sách
