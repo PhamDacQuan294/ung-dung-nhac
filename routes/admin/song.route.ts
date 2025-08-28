@@ -18,7 +18,7 @@ router.post(
     { name: 'avatar', maxCount: 1 }, 
     { name: 'audio', maxCount: 1 }
   ]),
-  uploadCloud.uploadSingle, 
+   uploadCloud.uploadFields, 
   controller.createPost
 );
 
@@ -30,7 +30,7 @@ router.patch(
     { name: 'avatar', maxCount: 1 }, 
     { name: 'audio', maxCount: 1 }
   ]),
-  uploadCloud.uploadSingle, 
+  uploadCloud.uploadFields, 
   controller.editPatch
 )
 export const songRoutes: Router = router;

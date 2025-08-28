@@ -22,7 +22,7 @@ cloudinary_1.v2.config({
     api_key: process.env.CLOUD_KEY,
     api_secret: process.env.CLOUD_SECRET,
 });
-const streamUpload = (buffer) => {
+let streamUpload = (buffer) => {
     return new Promise((resolve, reject) => {
         let stream = cloudinary_1.v2.uploader.upload_stream({
             resource_type: 'auto'

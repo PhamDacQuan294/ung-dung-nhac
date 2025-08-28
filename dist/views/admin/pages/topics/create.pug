@@ -1,12 +1,14 @@
 extends ../../layouts/default.pug
 
 block main 
+
   h1(class="mb-4") Thêm mới chủ đề
 
   form(
     action=`/${prefixAdmin}/topics/create`
     id="form-create-topic"
     method="POST"
+    enctype="multipart/form-data"
   )
     div(class="form-group")
       lable(for="title") Tiêu đề
@@ -15,7 +17,6 @@ block main
         class="form-control"
         id="title"
         name="title"
-        required
       )
     div(class="form-group")
       lable(for="desc") Mô tả

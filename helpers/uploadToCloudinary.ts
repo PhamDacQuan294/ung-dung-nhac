@@ -11,7 +11,7 @@ cloudinary.config({
 });
 // End cloudinary
 
-const streamUpload = (buffer: any) => {
+let streamUpload = (buffer: any) => {
   return new Promise((resolve, reject) => {
     let stream = cloudinary.uploader.upload_stream({
       resource_type: 'auto'

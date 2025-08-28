@@ -4,6 +4,7 @@ import multer from "multer";
 
 import * as controller from "../../controllers/admin/topic.controller";
 import * as uploadCloud from "../../middlewares/admin/uploadCloud.middleware";
+import * as validate from "../../validates/admin/topic.validate";
 
 const upload = multer();
 
@@ -19,9 +20,10 @@ router.get("/create", controller.create);
 
 router.post(
   "/create", 
-  upload.single("file"),
+  upload.single("avatar"),
   uploadCloud.uploadSingle,
-  controller.createPost
+  validate.createPost,
+  controller.createPost,
 );
 
 export const topicRoutes: Router = router;

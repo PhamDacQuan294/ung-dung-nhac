@@ -119,14 +119,25 @@ const create = (req, res) => {
 };
 exports.create = create;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let avatar = "";
+    if (req.body.avatar) {
+        avatar = req.body.avatar;
+    }
     if (req.body.position == "") {
-        const countProducts = yield topic_model_1.default.countDocuments();
-        req.body.position = countProducts + 1;
+        const countTopics = yield topic_model_1.default.countDocuments();
+        req.body.position = countTopics + 1;
     }
     else {
         req.body.position = parseInt(req.body.position);
     }
-    const topic = new topic_model_1.default(req.body);
+    const dataTopic = {
+        title: req.body.title,
+        description: req.body.description,
+        status: req.body.status,
+        avatar: avatar,
+        position: req.body.position
+    };
+    const topic = new topic_model_1.default(dataTopic);
     yield topic.save();
     res.redirect(`/${config_1.systemConfig.prefixAdmin}/topics`);
 });
