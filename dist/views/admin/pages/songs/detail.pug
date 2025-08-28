@@ -1,0 +1,38 @@
+extends ../../layouts/default.pug
+
+block main 
+  if (song.title) 
+    h1(class="mb-4") #{song.title}
+
+  if (song.avatar)
+    div(class="mb-4")
+      img(
+        src=song.avatar
+        style="width: 100px"
+      )
+  if (song.nameTopic) 
+    div(class="mb-4") Chủ đề: <b>!{song.nameTopic}</b>
+
+  if (song.nameSinger) 
+    div(class="mb-4") Ca sĩ: <b>!{song.nameSinger}</b>
+
+  if (song.status)
+    div(class="mb-4")
+      span Trang thái: 
+      if (song.status === "active")
+        span(class="badge badge-success") Hoạt động
+      else 
+        span(class="badge badge-danger") Dừng hoạt động
+  
+  if (song.position) 
+    div(class="mb-4") Ví trị: <b>#{song.position}</b>
+  
+  if (song.description)
+    div(class="mb-4") !{song.description}
+
+  a(
+    href=`/${prefixAdmin}/songs/edit/${song.id}`
+    class="btn btn-warning"
+  ) chỉnh sửa
+  
+  script(src="/admin/js/song.js")

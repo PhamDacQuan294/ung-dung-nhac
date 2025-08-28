@@ -44,6 +44,9 @@ const controller = __importStar(require("../../controllers/admin/song.controller
 const uploadCloud = __importStar(require("../../middlewares/admin/uploadCloud.middleware"));
 const upload = (0, multer_1.default)();
 router.get("/", controller.index);
+router.patch("/change-status/:status/:id", controller.changeStatus);
+router.patch("/change-multi", controller.changeMulti);
+router.delete("/delete/:id", controller.deleteItem);
 router.get("/create", controller.create);
 router.post("/create", upload.fields([
     { name: 'avatar', maxCount: 1 },
@@ -54,4 +57,5 @@ router.patch("/edit/:id", upload.fields([
     { name: 'avatar', maxCount: 1 },
     { name: 'audio', maxCount: 1 }
 ]), uploadCloud.uploadFields, controller.editPatch);
+router.get("/detail/:id", controller.detail);
 exports.songRoutes = router;
