@@ -28,7 +28,7 @@ block main
     .card-body
       .row
         .col-8
-          +form-change-multi(`/${prefixAdmin}/topics/change-multi`)
+          +form-change-multi(`/${prefixAdmin}/songs/change-multi`)
         .col-4.text-right
           a(
             href=`/${prefixAdmin}/songs/create`
@@ -126,4 +126,4 @@ block main
     data-path=`/${prefixAdmin}/songs/delete`
   )
 
-  script(src="/admin/js/topic.js")
+  script(src="/admin/js/song.js")
