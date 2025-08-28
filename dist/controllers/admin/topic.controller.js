@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPost = exports.create = exports.deleteItem = exports.changeMulti = exports.changeStatus = exports.index = void 0;
+exports.editPatch = exports.edit = exports.createPost = exports.create = exports.deleteItem = exports.changeMulti = exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const filterStatus_1 = require("../../helpers/filterStatus");
 const search_1 = require("../../helpers/search");
@@ -114,7 +114,7 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.deleteItem = deleteItem;
 const create = (req, res) => {
     res.render("admin/pages/topics/create", {
-        pageTitle: "Thêm mới sản phẩm"
+        pageTitle: "Thêm mới chủ đề"
     });
 };
 exports.create = create;
@@ -142,3 +142,41 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     res.redirect(`/${config_1.systemConfig.prefixAdmin}/topics`);
 });
 exports.createPost = createPost;
+const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const find = {
+            deleted: false,
+            _id: req.params.id
+        };
+        const topic = yield topic_model_1.default.findOne(find);
+        res.render("admin/pages/topics/edit", {
+            pageTitle: "Chỉnh sửa chủ đề",
+            topic: topic,
+        });
+    }
+    catch (error) {
+        res.redirect(`/${config_1.systemConfig.prefixAdmin}/topics`);
+    }
+});
+exports.edit = edit;
+const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const dataTopic = {
+        title: req.body.title,
+        description: req.body.description,
+        status: req.body.status,
+        position: req.body.position
+    };
+    if (req.body.avatar) {
+        dataTopic["avatar"] = req.body.avatar;
+    }
+    try {
+        yield topic_model_1.default.updateOne({ _id: id }, dataTopic);
+        req.flash("success", `Cập nhật thành công sản phẩm!`);
+    }
+    catch (error) {
+        req.flash("success", `Cập nhật chưa thành công sản phẩm!`);
+    }
+    res.redirect(`/${config_1.systemConfig.prefixAdmin}/topics/edit/${id}`);
+});
+exports.editPatch = editPatch;

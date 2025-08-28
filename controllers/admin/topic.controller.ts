@@ -133,7 +133,7 @@ export const deleteItem = async (req: Request, res: Response) => {
 // [GET] /admin/topics/create
 export const create = (req: Request, res: Response) => {
   res.render("admin/pages/topics/create", {
-    pageTitle: "Thêm mới sản phẩm"
+    pageTitle: "Thêm mới chủ đề"
   });
 }
 
@@ -164,4 +164,48 @@ export const createPost = async (req: Request, res: Response) => {
   await topic.save();
 
   res.redirect(`/${systemConfig.prefixAdmin}/topics`);
+}
+
+// [GET] /admin/topics/edit/:id 
+export const edit = async (req: Request, res: Response) => {
+  try {
+    const find = {
+      deleted: false,
+      _id: req.params.id
+    }
+
+    const topic = await Topic.findOne(find);
+
+    res.render("admin/pages/topics/edit", {
+      pageTitle: "Chỉnh sửa chủ đề",
+      topic: topic,
+    });
+  } catch (error) {
+    res.redirect(`/${systemConfig.prefixAdmin}/topics`);
+  }
+}
+
+// [PATCH] /admin/topics/edit/:id
+export const editPatch = async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const dataTopic = {
+    title: req.body.title,
+    description: req.body.description,
+    status: req.body.status,
+    position: req.body.position
+  }
+
+  if(req.body.avatar) {
+    dataTopic["avatar"] = req.body.avatar;
+  }
+
+  try {
+    await Topic.updateOne({ _id: id }, dataTopic);
+    (req as any).flash("success", `Cập nhật thành công sản phẩm!`);
+  } catch (error) {
+    (req as any).flash("success", `Cập nhật chưa thành công sản phẩm!`);
+  }
+
+  res.redirect(`/${systemConfig.prefixAdmin}/topics/edit/${id}`);
 }
