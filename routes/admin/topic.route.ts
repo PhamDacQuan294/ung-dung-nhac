@@ -36,4 +36,6 @@ router.patch(
   controller.editPatch
 );
 
+router.get("/detail/:id", controller.detail);
+
 export const topicRoutes: Router = router;

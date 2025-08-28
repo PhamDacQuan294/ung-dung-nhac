@@ -4,7 +4,6 @@ import { filterStatus } from "../../helpers/filterStatus";
 import { objectSearh } from "../../helpers/search";
 import { objectPagination } from "../../helpers/pagination";
 import { systemConfig } from "../../config/config";
-import { title } from "process";
 
 // [GET] /admin/topics
 export const index = async (req: Request, res: Response) => {
@@ -208,4 +207,23 @@ export const editPatch = async (req: Request, res: Response) => {
   }
 
   res.redirect(`/${systemConfig.prefixAdmin}/topics/edit/${id}`);
+}
+
+// [GET] /admin/topics/detail/:id
+export const detail = async (req: Request, res: Response) => {
+  try {
+    const find = {
+      deleted: false,
+      _id: req.params.id
+    };
+
+    const topic = await Topic.findOne(find);
+
+    res.render("admin/pages/topics/detail", {
+      pageTitle: topic.title,
+      topic: topic
+    });
+  } catch (error) {
+    res.redirect(`/${systemConfig.prefixAdmin}/topics`);
+  }
 }

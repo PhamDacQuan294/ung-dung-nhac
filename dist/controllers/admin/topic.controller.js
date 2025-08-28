@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editPatch = exports.edit = exports.createPost = exports.create = exports.deleteItem = exports.changeMulti = exports.changeStatus = exports.index = void 0;
+exports.detail = exports.editPatch = exports.edit = exports.createPost = exports.create = exports.deleteItem = exports.changeMulti = exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const filterStatus_1 = require("../../helpers/filterStatus");
 const search_1 = require("../../helpers/search");
@@ -180,3 +180,20 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.redirect(`/${config_1.systemConfig.prefixAdmin}/topics/edit/${id}`);
 });
 exports.editPatch = editPatch;
+const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const find = {
+            deleted: false,
+            _id: req.params.id
+        };
+        const topic = yield topic_model_1.default.findOne(find);
+        res.render("admin/pages/topics/detail", {
+            pageTitle: topic.title,
+            topic: topic
+        });
+    }
+    catch (error) {
+        res.redirect(`/${config_1.systemConfig.prefixAdmin}/topics`);
+    }
+});
+exports.detail = detail;
