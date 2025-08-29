@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerPost = exports.register = void 0;
+exports.loginPost = exports.login = exports.registerPost = exports.register = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const md5_1 = __importDefault(require("md5"));
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -38,3 +38,35 @@ const registerPost = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     res.redirect("/");
 });
 exports.registerPost = registerPost;
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render("client/pages/user/login", {
+        pageTitle: "Đăng nhập tài khoản"
+    });
+});
+exports.login = login;
+const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const email = req.body.email;
+    const password = req.body.password;
+    const user = yield user_model_1.default.findOne({
+        email: email,
+        deleted: false
+    });
+    if (!user) {
+        req.flash("error", "Email không tồn tại!");
+        res.redirect("/user/login");
+        return;
+    }
+    if ((0, md5_1.default)(password) !== user.password) {
+        req.flash("error", "Sai mật khẩu!");
+        res.redirect("/user/login");
+        return;
+    }
+    if (user.status === "inactive") {
+        req.flash("error", "Tài khoản đang bị khoá!");
+        res.redirect("/user/login");
+        return;
+    }
+    res.cookie("tokenUser", user.tokenUser);
+    res.redirect("/");
+});
+exports.loginPost = loginPost;
