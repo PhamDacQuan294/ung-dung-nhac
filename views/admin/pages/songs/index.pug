@@ -8,122 +8,130 @@ include ../../mixins/sort.pug
 block main
   h1(class="mb-4") #{pageTitle}
 
-  .card.mb-3 
-    .card-header Bộ lọc và tìm kiếm
-    .card-body 
-      .row 
-        .col-6 
-          +filter-status(filterStatus)
-        .col-6 
-          +search(keyword)
-  .card.mb-3 
-    .card-header Sắp xếp
-    .card-body 
-      .row 
-        .col-4 
-          +sort()
+  if(role.permissions.includes("songs_view"))
+    .card.mb-3 
+      .card-header Bộ lọc và tìm kiếm
+      .card-body 
+        .row 
+          .col-6 
+            +filter-status(filterStatus)
+          .col-6 
+            +search(keyword)
+    .card.mb-3 
+      .card-header Sắp xếp
+      .card-body 
+        .row 
+          .col-4 
+            +sort()
 
-  .card.mb-3
-    .card-header Danh sách
-    .card-body
-      .row
-        .col-8
-          +form-change-multi(`/${prefixAdmin}/songs/change-multi`)
-        .col-4.text-right
-          a(
-            href=`/${prefixAdmin}/songs/create`
-            class="btn btn-outline-success"
-          ) + Thêm mới
+    .card.mb-3
+      .card-header Danh sách
+      .card-body
+        .row
+          .col-8
+            if(role.permissions.includes("songs_edit"))
+              +form-change-multi(`/${prefixAdmin}/songs/change-multi`)
+          .col-4.text-right
+            if(role.permissions.includes("songs_create"))
+              a(
+                href=`/${prefixAdmin}/songs/create`
+                class="btn btn-outline-success"
+              ) + Thêm mới
 
-      table(
-        class="table table-hover table-sm"
-        checkbox-multi
-      )
-        thead
-          tr
-            th 
-              input(type="checkbox" name="checkall")
-            th STT
-            th Hình ảnh
-            th Tiêu đề
-            th Ca sĩ
-            th Chủ đề
-            th Vị trí
-            th Trạng thái
-            th Hành động
-        tbody
-          each item, index in songs
+        table(
+          class="table table-hover table-sm"
+          checkbox-multi
+        )
+          thead
             tr
-              td 
-                input(
-                  type="checkbox"
-                  name="id"
-                  value=item.id
-                )
-              td #{pagination.limitItems * (pagination.currentPage - 1) + (index + 1)}
-              td
-                img(
-                  src=item.avatar
-                  alt=item.title
-                  width="80px"
-                  height="auto"
-                )
-              td #{item.title}
-              td #{item.nameSinger}
-              td #{item.nameTopic}
-              td 
-                input(
-                  type="number"
-                  value=item.position 
-                  style="width: 60px"
-                  min="1"
-                  name="position"
-                )
-              td
-                if (item.status === "active")
+              if(role.permissions.includes("songs_edit"))
+                th 
+                  input(type="checkbox" name="checkall")
+              th STT
+              th Hình ảnh
+              th Tiêu đề
+              th Ca sĩ
+              th Chủ đề
+              th Vị trí
+              th Trạng thái
+              th Hành động
+          tbody
+            each item, index in songs
+              tr
+                if(role.permissions.includes("songs_edit"))
+                  td 
+                    input(
+                      type="checkbox"
+                      name="id"
+                      value=item.id
+                    )
+                td #{pagination.limitItems * (pagination.currentPage - 1) + (index + 1)}
+                td
+                  img(
+                    src=item.avatar
+                    alt=item.title
+                    width="80px"
+                    height="auto"
+                  )
+                td #{item.title}
+                td #{item.nameSinger}
+                td #{item.nameTopic}
+                td 
+                  input(
+                    type="number"
+                    value=item.position 
+                    style="width: 60px"
+                    min="1"
+                    name="position"
+                  )
+                td
+                  if(role.permissions.includes("songs_edit"))
+                    if (item.status === "active")
+                      a(
+                        href="javascript:;"
+                        data-status=item.status
+                        data-id=item.id
+                        button-change-status
+                        class="badge badge-success"
+                      ) Hoạt động
+                    else
+                      a(
+                        href="javascript:;"
+                        data-status=item.status
+                        data-id=item.id
+                        button-change-status
+                        class="badge badge-danger"
+                      ) Dừng hoạt động
+                td
                   a(
-                    href="javascript:;"
-                    data-status=item.status
-                    data-id=item.id
-                    button-change-status
-                    class="badge badge-success"
-                  ) Hoạt động
-                else
-                  a(
-                    href="javascript:;"
-                    data-status=item.status
-                    data-id=item.id
-                    button-change-status
-                    class="badge badge-danger"
-                  ) Dừng hoạt động
-              td
-                a(
-                  class="btn btn-secondary btn-sm"
-                  href=`/${prefixAdmin}/songs/detail/${item.id}`
-                ) Chi tiết
-                a(
-                  class="btn btn-warning btn-sm ml-1"
-                  href=`/${prefixAdmin}/songs/edit/${item.id}`
-                ) Sửa
-                button(
-                  class="btn btn-danger btn-sm ml-1"
-                  button-delete
-                  data-id=item.id
-                ) Xóa
-  +pagination(pagination)
+                    class="btn btn-secondary btn-sm"
+                    href=`/${prefixAdmin}/songs/detail/${item.id}`
+                  ) Chi tiết
+                  if(role.permissions.includes("songs_edit"))
+                    a(
+                      class="btn btn-warning btn-sm ml-1"
+                      href=`/${prefixAdmin}/songs/edit/${item.id}`
+                    ) Sửa
+                  if(role.permissions.includes("songs_delete"))
+                    button(
+                      class="btn btn-danger btn-sm ml-1"
+                      button-delete
+                      data-id=item.id
+                    ) Xóa
+    +pagination(pagination)
 
-  form(
-    action=""
-    method="POST"
-    id="form-change-status"
-    data-path=`/${prefixAdmin}/songs/change-status`
-  )
+    form(
+      action=""
+      method="POST"
+      id="form-change-status"
+      data-path=`/${prefixAdmin}/songs/change-status`
+    )
 
-  form(
-    action=""
-    method="POST"
-    id="form-delete-item"
-    data-path=`/${prefixAdmin}/songs/delete`
-  )
+    form(
+      action=""
+      method="POST"
+      id="form-delete-item"
+      data-path=`/${prefixAdmin}/songs/delete`
+    )
 
-  script(src="/admin/js/song.js")
+    script(src="/admin/js/song.js")

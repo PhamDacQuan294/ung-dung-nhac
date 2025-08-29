@@ -8,119 +8,126 @@ include ../../mixins/sort.pug
 block main
   h1(class="mb-4") #{pageTitle}
 
-  .card.mb-3 
-    .card-header Bộ lọc và tìm kiếm
-    .card-body 
-      .row 
-        .col-6 
-          +filter-status(filterStatus)
-        .col-6 
-          +search(keyword)
+  if(role.permissions.includes("topics_view"))
+    .card.mb-3 
+      .card-header Bộ lọc và tìm kiếm
+      .card-body 
+        .row 
+          .col-6 
+            +filter-status(filterStatus)
+          .col-6 
+            +search(keyword)
           
-  .card.mb-3 
-    .card-header Sắp xếp
-    .card-body 
-      .row 
-        .col-4 
-          +sort()
+    .card.mb-3 
+      .card-header Sắp xếp
+      .card-body 
+        .row 
+          .col-4 
+            +sort()
 
-  .card.mb-3
-    .card-header Danh sách
-    .card-body
-      .row
-        .col-8
-          +form-change-multi(`/${prefixAdmin}/topics/change-multi`)
-        .col-4.text-right
-          a(
-            href=`/${prefixAdmin}/topics/create`
-            class=`btn btn-outline-success`
-          ) + Thêm mới
-
-      table(
-        class="table table-hover table-sm"
-        checkbox-multi
-      )
-        thead
-          tr
-            th 
-              input(type="checkbox" name="checkall")
-            th STT
-            th Hình ảnh
-            th Tiêu đề
-            th Trạng thái
-            th Vị trí
-            th Hành động
-        tbody
-          each item, index in topics
+    .card.mb-3
+      .card-header Danh sách
+      .card-body
+        .row
+          .col-8
+            if(role.permissions.includes("topics_edit"))
+              +form-change-multi(`/${prefixAdmin}/topics/change-multi`)
+          .col-4.text-right
+            if(role.permissions.includes("topics_create"))
+              a(
+                href=`/${prefixAdmin}/topics/create`
+                class=`btn btn-outline-success`
+              ) + Thêm mới
+        table(
+          class="table table-hover table-sm"
+          checkbox-multi
+        )
+          thead
             tr
-              td 
-                input(
-                  type="checkbox"
-                  name="id"
-                  value=item.id
-                )
-              td #{pagination.limitItems * (pagination.currentPage - 1) + (index + 1)}
-              td
-                img(
-                  src=item.avatar
-                  alt=item.title
-                  width="100px"
-                  height="auto"
-                )
-              td #{item.title}
-              td
-                if (item.status === "active")
+              if(role.permissions.includes("topics_edit"))
+                th 
+                  input(type="checkbox" name="checkall")
+              th STT
+              th Hình ảnh
+              th Tiêu đề
+              th Trạng thái
+              th Vị trí
+              th Hành động
+          tbody
+            each item, index in topics
+              tr
+                if(role.permissions.includes("topics_edit"))
+                  td 
+                    input(
+                      type="checkbox"
+                      name="id"
+                      value=item.id
+                    )
+                td #{pagination.limitItems * (pagination.currentPage - 1) + (index + 1)}
+                td
+                  img(
+                    src=item.avatar
+                    alt=item.title
+                    width="100px"
+                    height="auto"
+                  )
+                td #{item.title}
+                td
+                  if(role.permissions.includes("topics_edit"))
+                    if (item.status === "active")
+                      a(
+                        href="javascript:;"
+                        data-status=item.status
+                        data-id=item.id
+                        button-change-status
+                        class="badge badge-success"
+                      ) Hoạt động
+                    else
+                      a(
+                        href="javascript:;"
+                        data-status=item.status
+                        data-id=item.id
+                        button-change-status
+                        class="badge badge-danger"
+                      ) Dừng hoạt động
+                td 
+                  input(
+                    type="number"
+                    value=item.position 
+                    style="width: 60px"
+                    min="1"
+                    name="position"
+                  )
+                td
                   a(
-                    href="javascript:;"
-                    data-status=item.status
-                    data-id=item.id
-                    button-change-status
-                    class="badge badge-success"
-                  ) Hoạt động
-                else
-                  a(
-                    href="javascript:;"
-                    data-status=item.status
-                    data-id=item.id
-                    button-change-status
-                    class="badge badge-danger"
-                  ) Dừng hoạt động
-              td 
-                input(
-                  type="number"
-                  value=item.position 
-                  style="width: 60px"
-                  min="1"
-                  name="position"
-                )
-              td
-                a(
-                  class="btn btn-secondary btn-sm"
-                  href=`/${prefixAdmin}/topics/detail/${item.id}`
-                ) Chi tiết
-                a(
-                  class="btn btn-warning btn-sm ml-1"
-                  href=`/${prefixAdmin}/topics/edit/${item.id}`
-                ) Sửa
-                button(
-                  class="btn btn-danger btn-sm ml-1"
-                  button-delete
-                  data-id=item.id
-                ) Xóa
-  
-  +pagination(pagination)
+                    class="btn btn-secondary btn-sm"
+                    href=`/${prefixAdmin}/topics/detail/${item.id}`
+                  ) Chi tiết
+                  if(role.permissions.includes("topics_edit"))
+                    a(
+                      class="btn btn-warning btn-sm ml-1"
+                      href=`/${prefixAdmin}/topics/edit/${item.id}`
+                    ) Sửa
+                  if(role.permissions.includes("topics_delete"))
+                    button(
+                      class="btn btn-danger btn-sm ml-1"
+                      button-delete
+                      data-id=item.id
+                    ) Xóa
 
-  form(
-    action=""
-    method="POST"
-    id="form-change-status"
-    data-path=`/${prefixAdmin}/topics/change-status`
-  )
+    +pagination(pagination)
 
-  form(
-    action=""
-    method="POST"
-    id="form-delete-item"
-    data-path=`/${prefixAdmin}/topics/delete`
-  )
-  script(src="/admin/js/topic.js")
+    form(
+      action=""
+      method="POST"
+      id="form-change-status"
+      data-path=`/${prefixAdmin}/topics/change-status`
+    )
+
+    form(
+      action=""
+      method="POST"
+      id="form-delete-item"
+      data-path=`/${prefixAdmin}/topics/delete`
+    )
+    script(src="/admin/js/topic.js")

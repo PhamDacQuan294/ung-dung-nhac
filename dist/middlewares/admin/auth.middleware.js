@@ -15,16 +15,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAuth = void 0;
 const config_1 = require("../../config/config");
 const account_model_1 = __importDefault(require("../../models/account.model"));
+const role_model_1 = __importDefault(require("../../models/role.model"));
 const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.cookies.token) {
         res.redirect(`/${config_1.systemConfig.prefixAdmin}/auth/login`);
     }
     else {
-        const user = yield account_model_1.default.findOne({ token: req.cookies.token });
+        const user = yield account_model_1.default.findOne({ token: req.cookies.token }).select("-password");
         if (!user) {
             res.redirect(`/${config_1.systemConfig.prefixAdmin}/auth/login`);
         }
         else {
+            const role = yield role_model_1.default.findOne({
+                _id: user.role_id
+            }).select("title permissions");
+            res.locals.user = user;
+            res.locals.role = role;
             next();
         }
     }
