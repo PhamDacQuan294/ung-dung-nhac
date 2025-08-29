@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginPost = exports.login = void 0;
+exports.logout = exports.loginPost = exports.login = void 0;
 const account_model_1 = __importDefault(require("../../models/account.model"));
 const config_1 = require("../../config/config");
 const md5_1 = __importDefault(require("md5"));
@@ -46,6 +46,12 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.redirect(`/${config_1.systemConfig.prefixAdmin}/auth/login`);
         return;
     }
+    res.cookie("token", user.token);
     res.redirect(`/${config_1.systemConfig.prefixAdmin}/dashboard`);
 });
 exports.loginPost = loginPost;
+const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.clearCookie("token");
+    res.redirect(`/${config_1.systemConfig.prefixAdmin}/auth/login`);
+});
+exports.logout = logout;
