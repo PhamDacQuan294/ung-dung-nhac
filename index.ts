@@ -1,4 +1,4 @@
-import express, { Express } from "express";
+import express, { Express,  Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import * as database from "./config/database";
 import clientRoutes from "./routes/client/index.route";
@@ -47,6 +47,14 @@ clientRoutes(app);
 
 // Admin Routes
 adminRoutes(app);
+
+// Middleware 404
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(404).render("client/pages/errors/404", {
+    pageTitle: "404 Not Found",
+  });
+});
+
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);

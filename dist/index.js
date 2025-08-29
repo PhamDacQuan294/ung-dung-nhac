@@ -66,6 +66,11 @@ app.locals.prefixAdmin = config_1.systemConfig.prefixAdmin;
 app.locals.moment = moment;
 (0, index_route_1.default)(app);
 (0, index_route_2.default)(app);
+app.use((req, res, next) => {
+    res.status(404).render("client/pages/errors/404", {
+        pageTitle: "404 Not Found",
+    });
+});
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
 });
