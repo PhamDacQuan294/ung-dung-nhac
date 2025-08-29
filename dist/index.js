@@ -47,6 +47,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const express_session_1 = __importDefault(require("express-session"));
 const express_flash_1 = __importDefault(require("express-flash"));
 const config_1 = require("./config/config");
+const moment = require("moment");
 dotenv_1.default.config();
 database.connect();
 const app = (0, express_1.default)();
@@ -62,6 +63,7 @@ app.use((0, express_session_1.default)({ cookie: { maxAge: 60000 } }));
 app.use((0, express_flash_1.default)());
 app.use('/tinymce', express_1.default.static(path_1.default.join(__dirname, 'node_modules', 'tinymce')));
 app.locals.prefixAdmin = config_1.systemConfig.prefixAdmin;
+app.locals.moment = moment;
 (0, index_route_1.default)(app);
 (0, index_route_2.default)(app);
 app.listen(port, () => {

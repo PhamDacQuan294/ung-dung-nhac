@@ -4,6 +4,7 @@ include ../../mixins/search.pug
 include ../../mixins/pagination.pug
 include ../../mixins/form-change-multi.pug
 include ../../mixins/sort.pug
+include ../../mixins/moment.pug
 
 block main
   h1(class="mb-4") #{pageTitle}
@@ -51,6 +52,8 @@ block main
               th Hình ảnh
               th Tiêu đề
               th Trạng thái
+              th Người tạo
+              th Người cập nhật
               th Vị trí
               th Hành động
           tbody
@@ -90,6 +93,16 @@ block main
                         button-change-status
                         class="badge badge-danger"
                       ) Dừng hoạt động
+                td 
+                    p #{item.accountFullName}
+                    p
+                      +formatDate(item.createdBy.createdAt)
+                td 
+                    - const updatedBy = item.updatedBy.slice(-1)[0];
+                    if(updatedBy)
+                      p #{updatedBy.accountFullName}
+                      p
+                        +formatDateTime(updatedBy.updatedAt)
                 td 
                   input(
                     type="number"

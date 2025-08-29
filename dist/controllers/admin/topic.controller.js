@@ -18,6 +18,7 @@ const filterStatus_1 = require("../../helpers/filterStatus");
 const search_1 = require("../../helpers/search");
 const pagination_1 = require("../../helpers/pagination");
 const config_1 = require("../../config/config");
+const account_model_1 = __importDefault(require("../../models/account.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const statusFilters = (0, filterStatus_1.filterStatus)(req.query);
     let find = {
@@ -52,6 +53,21 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         .sort(sort)
         .limit(buildPagination.limitItems)
         .skip(buildPagination.skip);
+    for (const topic of topics) {
+        const user = yield account_model_1.default.findOne({
+            _id: topic.createdBy.account_id
+        });
+        if (user) {
+            topic["accountFullName"] = user.fullName;
+        }
+        const updatedBy = topic.updatedBy.slice(-1)[0];
+        if (updatedBy) {
+            const userUpdated = yield account_model_1.default.findOne({
+                _id: updatedBy.account_id
+            });
+            updatedBy["accountFullName"] = userUpdated.fullName;
+        }
+    }
     res.render("admin/pages/topics/index", {
         pageTitle: "Quản lý chủ đề",
         topics: topics,
@@ -65,10 +81,15 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const status = req.params.status;
     const id = req.params.id;
     const redirectUrl = req.query.redirect;
+    const updatedBy = {
+        account_id: res.locals.user.id,
+        updatedAt: new Date()
+    };
     yield topic_model_1.default.updateOne({
         _id: id
     }, {
-        status: status
+        status: status,
+        $push: { updatedBy: updatedBy }
     });
     req.flash("success", "Cập nhật trạng thái thành công!");
     res.redirect(redirectUrl);
@@ -78,31 +99,45 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const type = req.body.type;
     const ids = req.body.ids.split(", ");
     const redirectUrl = req.query.redirect;
+    const updatedBy = {
+        account_id: res.locals.user.id,
+        updatedAt: new Date()
+    };
     switch (type) {
         case "active":
-            yield topic_model_1.default.updateMany({ _id: { $in: ids } }, { status: "active" });
-            req.flash("success", `Cập nhật trạng thái thành công ${ids.length} sản phẩm!`);
+            yield topic_model_1.default.updateMany({ _id: { $in: ids } }, {
+                status: "active",
+                $push: { updatedBy: updatedBy }
+            });
+            req.flash("success", `Cập nhật trạng thái thành công ${ids.length} chủ đề!`);
             break;
         case "inactive":
-            yield topic_model_1.default.updateMany({ _id: { $in: ids } }, { status: "inactive" });
-            req.flash("success", `Cập nhật trạng thái thành công ${ids.length} sản phẩm!`);
+            yield topic_model_1.default.updateMany({ _id: { $in: ids } }, {
+                status: "inactive",
+                $push: { updatedBy: updatedBy }
+            });
+            req.flash("success", `Cập nhật trạng thái thành công ${ids.length} chủ đề!`);
             break;
         case "delete-all":
             yield topic_model_1.default.updateMany({ _id: { $in: ids } }, {
                 deleted: true,
-                deletedAt: new Date()
+                deletedBy: {
+                    account_id: res.locals.user.id,
+                    deletedAt: new Date()
+                }
             });
-            req.flash("success", `Đã xoá thành công ${ids.length} sản phẩm!`);
+            req.flash("success", `Đã xoá thành công ${ids.length} chủ đề!`);
             break;
         case "change-position":
             for (const item of ids) {
                 let [id, position] = item.split("-");
                 position = parseInt(position);
                 yield topic_model_1.default.updateOne({ _id: id }, {
-                    position: position
+                    position: position,
+                    $push: { updatedBy: updatedBy }
                 });
             }
-            req.flash("success", `Thay đổi vị trí thành công ${ids.length} sản phẩm!`);
+            req.flash("success", `Thay đổi vị trí thành công ${ids.length} chủ đề!`);
             break;
         default:
             break;
@@ -115,7 +150,10 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const redirectUrl = req.query.redirect;
     yield topic_model_1.default.updateOne({ _id: id }, {
         deleted: true,
-        deletedAt: new Date()
+        deletedBy: {
+            account_id: res.locals.user.id,
+            deletedAt: new Date()
+        }
     });
     req.flash("success", `Đã xoá thành công sản phẩm!`);
     res.redirect(redirectUrl);
@@ -139,12 +177,16 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     else {
         req.body.position = parseInt(req.body.position);
     }
+    const createdBy = {
+        account_id: res.locals.user.id
+    };
     const dataTopic = {
         title: req.body.title,
         description: req.body.description,
         status: req.body.status,
         avatar: avatar,
-        position: req.body.position
+        position: req.body.position,
+        createdBy: createdBy
     };
     const topic = new topic_model_1.default(dataTopic);
     yield topic.save();
@@ -180,7 +222,11 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         dataTopic["avatar"] = req.body.avatar;
     }
     try {
-        yield topic_model_1.default.updateOne({ _id: id }, dataTopic);
+        const updatedBy = {
+            account_id: res.locals.user.id,
+            updatedAt: new Date()
+        };
+        yield topic_model_1.default.updateOne({ _id: id }, Object.assign(Object.assign({}, dataTopic), { $push: { updatedBy: updatedBy } }));
         req.flash("success", `Cập nhật thành công sản phẩm!`);
     }
     catch (error) {

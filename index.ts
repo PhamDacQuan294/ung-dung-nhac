@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import flash from "express-flash";
 import { systemConfig } from "./config/config";
+import moment = require("moment");
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce
 
 // App Local Variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
+app.locals.moment = moment;
 
 // Client Routes
 clientRoutes(app);

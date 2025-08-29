@@ -4,6 +4,7 @@ import { filterStatus } from "../../helpers/filterStatus";
 import { objectSearh } from "../../helpers/search";
 import { objectPagination } from "../../helpers/pagination";
 import { systemConfig } from "../../config/config";
+import Account from "../../models/account.model";
 
 // [GET] /admin/topics
 export const index = async (req: Request, res: Response) => {
@@ -60,6 +61,29 @@ export const index = async (req: Request, res: Response) => {
   .limit(buildPagination.limitItems)
   .skip(buildPagination.skip);
   
+  for (const topic of topics) {
+    // Lay ra thong tin nguoi tao
+    const user = await Account.findOne({
+      _id: topic.createdBy.account_id
+    });
+
+    if(user) {
+      topic["accountFullName"] = user.fullName;
+    }
+
+    // Lay ra thong tin nguoi cap nhat gan nhat
+    const updatedBy = topic.updatedBy.slice(-1)[0];
+
+    if(updatedBy) {
+      const userUpdated = await Account.findOne({
+        _id: updatedBy.account_id
+      });
+
+      updatedBy["accountFullName"] = userUpdated.fullName;
+    }
+  }
+
+
   res.render("admin/pages/topics/index", {
     pageTitle: "Quản lý chủ đề",
     topics: topics,
@@ -75,10 +99,16 @@ export const changeStatus = async (req: Request, res: Response) => {
   const id: string = req.params.id;
   const redirectUrl: string = req.query.redirect as string;
 
+  const updatedBy = {
+    account_id: res.locals.user.id,
+    updatedAt: new Date()
+  }
+
   await Topic.updateOne({
     _id: id
   }, {
-    status: status
+    status: status,
+    $push: { updatedBy: updatedBy }
   });
 
   (req as any).flash("success", "Cập nhật trạng thái thành công!");
@@ -92,31 +122,46 @@ export const changeMulti = async (req: Request, res: Response) => {
   const ids = req.body.ids.split(", ");
   const redirectUrl: string = req.query.redirect as string;
 
+  const updatedBy = {
+    account_id: res.locals.user.id,
+    updatedAt: new Date()
+  }
+  
   switch (type) {
     case "active":
-      await Topic.updateMany({ _id: { $in: ids } }, { status: "active" });
-      (req as any).flash("success", `Cập nhật trạng thái thành công ${ids.length} sản phẩm!`);
+      await Topic.updateMany({ _id: { $in: ids } }, { 
+        status: "active",
+        $push: { updatedBy: updatedBy }
+      });
+      (req as any).flash("success", `Cập nhật trạng thái thành công ${ids.length} chủ đề!`);
       break;
     case "inactive":
-      await Topic.updateMany({ _id: { $in: ids } }, { status: "inactive" });
-      (req as any).flash("success", `Cập nhật trạng thái thành công ${ids.length} sản phẩm!`);
+      await Topic.updateMany({ _id: { $in: ids } }, { 
+        status: "inactive",
+        $push: { updatedBy: updatedBy }
+      });
+      (req as any).flash("success", `Cập nhật trạng thái thành công ${ids.length} chủ đề!`);
       break;
     case "delete-all":
       await Topic.updateMany({ _id: { $in: ids } }, {
         deleted: true,
-        deletedAt: new Date()
+        deletedBy: {
+          account_id: res.locals.user.id,
+          deletedAt: new Date()
+        }
       });
-      (req as any).flash("success", `Đã xoá thành công ${ids.length} sản phẩm!`);
+      (req as any).flash("success", `Đã xoá thành công ${ids.length} chủ đề!`);
       break;
     case "change-position":
       for (const item of ids) {
         let [id, position] = item.split("-");
         position = parseInt(position);
         await Topic.updateOne({ _id: id }, {
-          position: position
+          position: position,
+          $push: { updatedBy: updatedBy }
         });
       }
-      (req as any).flash("success", `Thay đổi vị trí thành công ${ids.length} sản phẩm!`);
+      (req as any).flash("success", `Thay đổi vị trí thành công ${ids.length} chủ đề!`);
       break;
     default:
       break;
@@ -132,7 +177,10 @@ export const deleteItem = async (req: Request, res: Response) => {
 
   await Topic.updateOne({ _id: id }, {
     deleted: true,
-    deletedAt: new Date()
+    deletedBy: {
+      account_id: res.locals.user.id,
+      deletedAt: new Date()
+    }
   });
 
   (req as any).flash("success", `Đã xoá thành công sản phẩm!`);
@@ -162,12 +210,17 @@ export const createPost = async (req: Request, res: Response) => {
     req.body.position = parseInt(req.body.position);
   }
 
+  const createdBy = {
+    account_id: res.locals.user.id
+  };
+
   const dataTopic = {
     title: req.body.title,
     description: req.body.description,
     status: req.body.status,
     avatar: avatar,
-    position: req.body.position
+    position: req.body.position,
+    createdBy: createdBy 
   };
 
   const topic = new Topic(dataTopic);
@@ -211,7 +264,15 @@ export const editPatch = async (req: Request, res: Response) => {
   }
 
   try {
-    await Topic.updateOne({ _id: id }, dataTopic);
+    const updatedBy = {
+      account_id: res.locals.user.id,
+      updatedAt: new Date()
+    }
+
+    await Topic.updateOne({ _id: id }, {
+      ...dataTopic,
+      $push: { updatedBy: updatedBy }
+    });
     (req as any).flash("success", `Cập nhật thành công sản phẩm!`);
   } catch (error) {
     (req as any).flash("success", `Cập nhật chưa thành công sản phẩm!`);
