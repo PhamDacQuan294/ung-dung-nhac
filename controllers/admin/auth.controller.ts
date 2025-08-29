@@ -6,9 +6,13 @@ import md5 from "md5";
 
 // [GET] /admin/auth/login
 export const login = async (req: Request, res: Response) => {
-  res.render("admin/pages/auth/login", {
-    pageTitle: "Đăng nhập",
-  });
+  if(req.cookies.token) {
+    res.redirect(`/${systemConfig.prefixAdmin}/dashboard`);
+  } else {
+    res.render("admin/pages/auth/login", {
+      pageTitle: "Đăng nhập",
+    });
+  }
 }
 
 // [POST] /admin/auth/login
