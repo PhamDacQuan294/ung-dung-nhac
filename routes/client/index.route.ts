@@ -21,7 +21,7 @@ const clientRoutes = (app: Express): void => {
   app.use(`/search`, searchRoutes);
 
   app.use("/user", userRoutes);
-
+  
 }
 
 export default clientRoutes;

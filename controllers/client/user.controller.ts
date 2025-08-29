@@ -182,3 +182,10 @@ export const resetPasswordPost = async (req: Request, res: Response) => {
 
   res.redirect("/");
 }
+
+// [GET] /user/info
+export const info = async (req: Request, res: Response) => {
+  res.render("client/pages/user/info",{
+    pageTitle: "Thông tin tài khoản",
+  });
+}

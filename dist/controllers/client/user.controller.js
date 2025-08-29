@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPasswordPost = exports.resetPassword = exports.otpPasswordPost = exports.otpPassword = exports.forgotPasswordPost = exports.forgotPassword = exports.logout = exports.loginPost = exports.login = exports.registerPost = exports.register = void 0;
+exports.info = exports.resetPasswordPost = exports.resetPassword = exports.otpPasswordPost = exports.otpPassword = exports.forgotPasswordPost = exports.forgotPassword = exports.logout = exports.loginPost = exports.login = exports.registerPost = exports.register = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const md5_1 = __importDefault(require("md5"));
 const generateHelper = __importStar(require("../../helpers/generate"));
@@ -188,3 +188,9 @@ const resetPasswordPost = (req, res) => __awaiter(void 0, void 0, void 0, functi
     res.redirect("/");
 });
 exports.resetPasswordPost = resetPasswordPost;
+const info = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render("client/pages/user/info", {
+        pageTitle: "Thông tin tài khoản",
+    });
+});
+exports.info = info;

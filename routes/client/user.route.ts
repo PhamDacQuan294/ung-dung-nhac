@@ -5,6 +5,8 @@ import * as controller from "../../controllers/client/user.controller";
 
 import * as validate from "../../validates/client/user.validate";
 
+import * as authMiddleware from "../../middlewares/client/auth.middleware";
+
 router.get("/register", controller.register);
 
 router.post("/register", validate.registerPost ,controller.registerPost);
@@ -26,5 +28,7 @@ router.post("/password/otp", controller.otpPasswordPost);
 router.get("/password/reset", controller.resetPassword);
 
 router.post("/password/reset", controller.resetPasswordPost);
+
+router.get("/info", authMiddleware.requireAuth, controller.info);
 
 export const userRoutes: Router = router;
