@@ -50,15 +50,14 @@ const config_1 = require("./config/config");
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const moment = require("moment");
+const chat_socket_1 = require("./sockets/chat.socket");
 dotenv_1.default.config();
 database.connect();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server);
-io.on('connection', (socket) => {
-    console.log('a user connected', socket.id);
-});
+(0, chat_socket_1.chatSocket)(io);
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, method_override_1.default)("_method"));

@@ -41,6 +41,7 @@ const home_route_1 = require("./home.route");
 const user_route_1 = require("./user.route");
 const userMiddleware = __importStar(require("../../middlewares/client/user.middleware"));
 const settingMiddleware = __importStar(require("../../middlewares/client/setting.middleware"));
+const authMiddleware = __importStar(require("../../middlewares/client/auth.middleware"));
 const chat_route_1 = require("./chat.route");
 const clientRoutes = (app) => {
     app.use(userMiddleware.infoUser);
@@ -51,6 +52,6 @@ const clientRoutes = (app) => {
     app.use(`/favorite-songs`, favorite_song_route_1.favoriteSongRoutes);
     app.use(`/search`, search_route_1.searchRoutes);
     app.use("/user", user_route_1.userRoutes);
-    app.use("/chat", chat_route_1.chatRoutes);
+    app.use("/chat", authMiddleware.requireAuth, chat_route_1.chatRoutes);
 };
 exports.default = clientRoutes;
