@@ -44,7 +44,6 @@ if (listBtnRefuseFriend.length > 0) {
 }
 // Hết Chức năng từ chối kết bạn
 
-
 // Chức năng chấp nhận kết bạn
 const listBtnAcceptFriend = document.querySelectorAll("[btn-accept-friend]");
 if (listBtnAcceptFriend.length > 0) {
@@ -59,3 +58,15 @@ if (listBtnAcceptFriend.length > 0) {
   });
 }
 // Hết Chức năng chấp nhận kết bạn
+
+// SERVER_RETURN_LENGTH_ACCEPT_FRIEND
+const badgeUsersAccept = document.querySelector("[badge-users-accept]");
+if (badgeUsersAccept) {
+  const userId = badgeUsersAccept.getAttribute("badge-users-accept");
+  socket.on("SERVER_RETURN_LENGTH_ACCEPT_FRIEND", (data) => {
+    if(userId === data.userId) {
+      badgeUsersAccept.innerHTML = data.lengthAcceptFriends;
+    }
+  });
+}
+// End SERVER_RETURN_LENGTH_ACCEPT_FRIEND

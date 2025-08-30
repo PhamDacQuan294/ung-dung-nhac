@@ -41,6 +41,14 @@ const usersSocket = (req, res) => {
                     $push: { requestFriends: userId }
                 });
             }
+            const infoUserB = yield user_model_1.default.findOne({
+                _id: userId
+            });
+            const lengthAcceptFriends = infoUserB.acceptFriends.length;
+            socket.broadcast.emit("SERVER_RETURN_LENGTH_ACCEPT_FRIEND", {
+                userId: userId,
+                lengthAcceptFriends: lengthAcceptFriends
+            });
         }));
         socket.on("CLIENT_CANCEL_FRIEND", (userId) => __awaiter(void 0, void 0, void 0, function* () {
             const myUserId = res.locals.user.id;
