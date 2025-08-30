@@ -6,6 +6,7 @@ export const usersSocket = (req: Request, res: Response) => {
   const _io = (global as any)._io;
 
   _io.once("connection", (socket: Socket) => {
+    // Chức năng gửi yêu cầu
     socket.on("CLIENT_ADD_FRIEND", async (userId) => {
       const myUserId = res.locals.user.id;
 
@@ -34,6 +35,39 @@ export const usersSocket = (req: Request, res: Response) => {
           _id: myUserId
         }, {
           $push: { requestFriends: userId }
+        });
+      }
+    });
+
+    // Chức năng huỷ gửi yêu cầu
+    socket.on("CLIENT_CANCEL_FRIEND", async (userId) => {
+      const myUserId = res.locals.user.id;
+
+      // Xoá id của A trong acceptFriends của B
+      const existIdAinB = await User.findOne({
+        _id: userId,
+        acceptFriends: myUserId
+      });
+
+      if (existIdAinB) {
+        await User.updateOne({
+          _id: userId
+        }, {
+          $pull: { acceptFriends: myUserId }
+        });
+      }
+
+      // xoá id của B trong requestFriends của A
+      const existIdBinA = await User.findOne({
+        _id: myUserId,
+        requestFriends: userId
+      });
+
+      if (existIdBinA) {
+        await User.updateOne({
+          _id: myUserId
+        }, {
+          $pull: { requestFriends: userId }
         });
       }
     });
