@@ -48,6 +48,16 @@ export const usersSocket = (req: Request, res: Response) => {
         userId: userId,
         lengthAcceptFriends: lengthAcceptFriends
       });
+
+      // Lấy info của A trả về cho B
+      const infoUserA = await User.findOne({
+        _id: myUserId
+      }).select("id avatar fullName");
+
+      socket.broadcast.emit("SERVER_RETURN_INFO_ACCEPT_FRIEND", {
+        userId: userId,
+        infoUserA: infoUserA
+      });
     });
 
     // Chức năng huỷ gửi yêu cầu
