@@ -1,12 +1,28 @@
 import { Request, Response } from "express";
 import User from "../../models/user.model";
+import { usersSocket } from "../../sockets/client/users.socket";
 
 // [GET] /users/not-friend
 export const notFriend = async (req: Request, res: Response) => {
+  // Socket
+  usersSocket(req, res);
+  // End Socket
+
   const userId = res.locals.user.id;
 
+  const myUser = await User.findOne({
+    _id: userId
+  });
+
+  const requestFriends = myUser.requestFriends;
+  const acceptFriends = myUser.acceptFriends;
+
   const users = await User.find({
-    _id: { $ne: userId },
+    $and: [
+      { _id: { $ne: userId } },
+      { _id: { $nin: requestFriends } },
+      { _id: { $nin: acceptFriends } }
+    ],
     status: "active",
     deleted: false  
   }).select("id avatar fullName");

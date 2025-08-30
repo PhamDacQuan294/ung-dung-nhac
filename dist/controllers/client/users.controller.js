@@ -14,10 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.notFriend = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
+const users_socket_1 = require("../../sockets/client/users.socket");
 const notFriend = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, users_socket_1.usersSocket)(req, res);
     const userId = res.locals.user.id;
+    const myUser = yield user_model_1.default.findOne({
+        _id: userId
+    });
+    const requestFriends = myUser.requestFriends;
+    const acceptFriends = myUser.acceptFriends;
     const users = yield user_model_1.default.find({
-        _id: { $ne: userId },
+        $and: [
+            { _id: { $ne: userId } },
+            { _id: { $nin: requestFriends } },
+            { _id: { $nin: acceptFriends } }
+        ],
         status: "active",
         deleted: false
     }).select("id avatar fullName");
