@@ -1,4 +1,17 @@
 extends ../../layouts/default.pug
+include ../../mixins/song-layout.pug
 
 block main 
-  h1 Trang chủ
+  .list-songs
+    .container
+      .row 
+        .col-12.mb-3
+          h2 Top 10 bài hát có lượt like nhiều nhất
+      +song-grid(topLikes)
+
+  .list-songs
+    .container
+      .row 
+        .col-12.mb-3
+          h2 Top 10 bài hát có lượt nghe nhiều nhất
+      +song-grid(topListens)

@@ -366,3 +366,48 @@
   cursor: pointer;
 }
 /* End Show Alert */
+
+
+/* list-songs */
+.list-songs {
+  padding: 50px 0;
+}
+
+.list-songs .col-12,
+.list-songs .col-md-6,
+.list-songs .col-lg-4 {
+  display: flex;
+}
+
+.list-songs .song-item {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  padding: 15px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  transition: transform 0.2s ease;
+}
+
+.list-songs .song-item:hover {
+  transform: translateY(-5px);
+}
+
+.list-songs .inner-image {
+  width: 30%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.list-songs .inner-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Hết list-song */

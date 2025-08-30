@@ -98,6 +98,7 @@ export const like = async (req: Request, res: Response) => {
 export const favorite = async (req: Request, res: Response) => {
   const idSong: string = req.params.idSong;
   const typeFavorite: string = req.params.typeFavorite;
+  const idUser: string = res.locals.user.id;
 
   switch (typeFavorite) {
     case "favorite":
@@ -106,7 +107,7 @@ export const favorite = async (req: Request, res: Response) => {
       });
       if (!existFavoriteSong) {
         const record = new FavoriteSong({
-          // userId: "",
+          userId: idUser,
           songId: idSong
         });
         await record.save();

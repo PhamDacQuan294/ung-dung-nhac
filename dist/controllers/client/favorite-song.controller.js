@@ -17,7 +17,9 @@ const favorite_song_model_1 = __importDefault(require("../../models/favorite-son
 const song_model_1 = __importDefault(require("../../models/song.model"));
 const singer_model_1 = __importDefault(require("../../models/singer.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const idUser = res.locals.user.id;
     const favoriteSongs = yield favorite_song_model_1.default.find({
+        userId: idUser,
         deleted: false
     });
     for (const item of favoriteSongs) {

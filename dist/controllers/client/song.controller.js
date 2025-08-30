@@ -93,6 +93,7 @@ exports.like = like;
 const favorite = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const idSong = req.params.idSong;
     const typeFavorite = req.params.typeFavorite;
+    const idUser = res.locals.user.id;
     switch (typeFavorite) {
         case "favorite":
             const existFavoriteSong = yield favorite_song_model_1.default.findOne({
@@ -100,6 +101,7 @@ const favorite = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
             if (!existFavoriteSong) {
                 const record = new favorite_song_model_1.default({
+                    userId: idUser,
                     songId: idSong
                 });
                 yield record.save();
