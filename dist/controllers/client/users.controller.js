@@ -27,7 +27,7 @@ const notFriend = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         $and: [
             { _id: { $ne: userId } },
             { _id: { $nin: requestFriends } },
-            { _id: { $nin: acceptFriends } }
+            { _id: { $nin: acceptFriends } },
         ],
         status: "active",
         deleted: false

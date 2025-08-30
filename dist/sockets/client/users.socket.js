@@ -92,6 +92,43 @@ const usersSocket = (req, res) => {
                 });
             }
         }));
+        socket.on("CLIENT_ACCEPT_FRIEND", (userId) => __awaiter(void 0, void 0, void 0, function* () {
+            const myUserId = res.locals.user.id;
+            const existIdAinB = yield user_model_1.default.findOne({
+                _id: myUserId,
+                acceptFriends: userId
+            });
+            if (existIdAinB) {
+                yield user_model_1.default.updateOne({
+                    _id: myUserId
+                }, {
+                    $push: {
+                        friendList: {
+                            user_id: userId,
+                            room_chat_id: ""
+                        }
+                    },
+                    $pull: { acceptFriends: userId }
+                });
+            }
+            const existIdBinA = yield user_model_1.default.findOne({
+                _id: userId,
+                requestFriends: myUserId
+            });
+            if (existIdBinA) {
+                yield user_model_1.default.updateOne({
+                    _id: userId
+                }, {
+                    $push: {
+                        friendList: {
+                            user_id: myUserId,
+                            room_chat_id: ""
+                        }
+                    },
+                    $pull: { requestFriends: myUserId }
+                });
+            }
+        }));
     });
 };
 exports.usersSocket = usersSocket;

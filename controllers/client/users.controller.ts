@@ -21,7 +21,7 @@ export const notFriend = async (req: Request, res: Response) => {
     $and: [
       { _id: { $ne: userId } },
       { _id: { $nin: requestFriends } },
-      { _id: { $nin: acceptFriends } }
+      { _id: { $nin: acceptFriends } },
     ],
     status: "active",
     deleted: false  
