@@ -9,6 +9,9 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import flash from "express-flash";
 import { systemConfig } from "./config/config";
+import http from "http";
+import { Server } from "socket.io";
+
 import moment = require("moment");
 
 dotenv.config();
@@ -17,6 +20,15 @@ database.connect();
 
 const app: Express = express();
 const port: number | string = process.env.PORT || 3000;
+
+// SocketIO
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+  console.log('a user connected', socket.id);
+})
+// End SocketIO
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -56,6 +68,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
