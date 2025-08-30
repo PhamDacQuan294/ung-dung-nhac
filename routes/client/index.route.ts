@@ -9,6 +9,7 @@ import * as userMiddleware from "../../middlewares/client/user.middleware";
 import * as settingMiddleware from "../../middlewares/client/setting.middleware";
 import * as authMiddleware from "../../middlewares/client/auth.middleware";
 import { chatRoutes } from "./chat.route";
+import { usersRoutes } from "./users.route";
 
 const clientRoutes = (app: Express): void => {
   app.use(userMiddleware.infoUser);
@@ -28,6 +29,7 @@ const clientRoutes = (app: Express): void => {
 
   app.use("/chat", authMiddleware.requireAuth, chatRoutes);
   
+  app.use("/users", authMiddleware.requireAuth, usersRoutes);
 }
 
 export default clientRoutes;
