@@ -9,7 +9,7 @@ block main
     
     .row 
       .col-12 
-        .chat 
+        .chat(my-id=user.id)
           .inner-head 
             .inner-avatar EY 
             .inner-name Em Yeu 
@@ -30,5 +30,10 @@ block main
                 placeholder="Nhập nội dung..."
                 name="content"
               )
+              span(class="button-icon btn btn-light mx-2") <i class="fa-solid fa-face-smile-beam"></i>
               button 
                 i.fa-solid.fa-paper-plane
+
+        div(class="tooltip" role="tooltip")
+          emoji-picker(class="light")
+  

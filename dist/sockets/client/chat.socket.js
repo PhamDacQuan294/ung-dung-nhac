@@ -16,6 +16,7 @@ exports.chatSocket = void 0;
 const chat_model_1 = __importDefault(require("../../models/chat.model"));
 const chatSocket = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = res.locals.user.id;
+    const fullName = res.locals.user.fullName;
     const _io = global._io;
     _io.once("connection", (socket) => {
         socket.on("CLIENT_SEND_MESSAGE", (content) => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,6 +25,11 @@ const chatSocket = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 content: content
             });
             yield chat.save();
+            _io.emit("SERVER_RETURN_MESSAGE", {
+                userId: userId,
+                fullName: fullName,
+                content: content
+            });
         }));
     });
 });

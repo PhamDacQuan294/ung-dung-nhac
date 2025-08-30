@@ -4,6 +4,8 @@ import { Socket } from "socket.io";
 
 export const chatSocket = async (req: Request, res: Response) => {
   const userId = res.locals.user.id;
+  const fullName = res.locals.user.fullName;
+
   const _io = (global as any)._io;
 
   _io.once("connection", (socket: Socket) => {
@@ -14,6 +16,14 @@ export const chatSocket = async (req: Request, res: Response) => {
         content: content
       });
       await chat.save();
-    })
+
+      // Trả data về client
+      
+      _io.emit("SERVER_RETURN_MESSAGE", {
+        userId: userId,
+        fullName: fullName,
+        content: content
+      });
+    });
   });
 }
