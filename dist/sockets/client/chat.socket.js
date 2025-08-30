@@ -31,6 +31,13 @@ const chatSocket = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 content: content
             });
         }));
+        socket.on("CLIENT_SEND_TYPING", (type) => __awaiter(void 0, void 0, void 0, function* () {
+            socket.broadcast.emit("SERVER_RETURN_TYPING", {
+                userId: userId,
+                fullName: fullName,
+                type: type
+            });
+        }));
     });
 });
 exports.chatSocket = chatSocket;

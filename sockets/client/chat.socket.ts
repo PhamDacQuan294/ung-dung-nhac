@@ -25,5 +25,14 @@ export const chatSocket = async (req: Request, res: Response) => {
         content: content
       });
     });
+
+    // Typing
+    socket.on("CLIENT_SEND_TYPING", async (type) => {
+      socket.broadcast.emit("SERVER_RETURN_TYPING", {
+        userId: userId,
+        fullName: fullName,
+        type: type
+      })
+    });
   });
 }
