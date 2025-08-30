@@ -39,4 +39,5 @@ const router = (0, express_1.Router)();
 const controller = __importStar(require("../../controllers/client/users.controller"));
 router.get("/not-friend", controller.notFriend);
 router.get("/request", controller.request);
+router.get("/accept", controller.accept);
 exports.usersRoutes = router;
