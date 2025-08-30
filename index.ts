@@ -13,7 +13,6 @@ import http from "http";
 import { Server } from "socket.io";
 
 import moment = require("moment");
-import { chatSocket } from "./sockets/chat.socket";
 
 dotenv.config();
 
@@ -26,7 +25,7 @@ const port: number | string = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = new Server(server);
 
-chatSocket(io);
+(global as any)._io = io;
 // End SocketIO
 
 app.use(express.json());

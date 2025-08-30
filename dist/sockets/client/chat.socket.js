@@ -12,24 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.index = void 0;
-const chat_socket_1 = require("../../sockets/client/chat.socket");
+exports.chatSocket = void 0;
 const chat_model_1 = __importDefault(require("../../models/chat.model"));
-const user_model_1 = __importDefault(require("../../models/user.model"));
-const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, chat_socket_1.chatSocket)(req, res);
-    const chats = yield chat_model_1.default.find({
-        deleted: false
-    });
-    for (const chat of chats) {
-        const infoUser = yield user_model_1.default.findOne({
-            _id: chat.user_id
-        }).select("fullName");
-        chat["infoUser"] = infoUser;
-    }
-    res.render("client/pages/chat/index", {
-        pageTitle: "Chat",
-        chats: chats
+const chatSocket = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = res.locals.user.id;
+    const _io = global._io;
+    _io.once("connection", (socket) => {
+        socket.on("CLIENT_SEND_MESSAGE", (content) => __awaiter(void 0, void 0, void 0, function* () {
+            const chat = new chat_model_1.default({
+                user_id: userId,
+                content: content
+            });
+            yield chat.save();
+        }));
     });
 });
-exports.index = index;
+exports.chatSocket = chatSocket;
