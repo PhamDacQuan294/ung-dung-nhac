@@ -5,4 +5,8 @@ import * as controller from "../../controllers/client/rooms-chat.controller";
 
 router.get("/", controller.index);
 
+router.get("/create", controller.create);
+
+router.post("/create", controller.createPost);
+
 export const roomsChatRoutes: Router = router;
