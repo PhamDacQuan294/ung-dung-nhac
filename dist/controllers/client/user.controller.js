@@ -83,6 +83,7 @@ exports.login = login;
 const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const password = req.body.password;
+    const _io = global._io;
     const user = yield user_model_1.default.findOne({
         email: email,
         deleted: false
@@ -103,10 +104,33 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     res.cookie("tokenUser", user.tokenUser);
+    yield user_model_1.default.updateOne({
+        tokenUser: user.tokenUser
+    }, {
+        statusOnline: "online"
+    });
+    _io.once('connection', (socket) => {
+        socket.broadcast.emit("SERVER_RETURN_USER_STATUS_ONLINE", {
+            userId: user.id,
+            status: "online"
+        });
+    });
     res.redirect("/");
 });
 exports.loginPost = loginPost;
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const _io = global._io;
+    yield user_model_1.default.updateOne({
+        tokenUser: req.cookies.tokenUser
+    }, {
+        statusOnline: "offline"
+    });
+    _io.once('connection', (socket) => {
+        socket.broadcast.emit("SERVER_RETURN_USER_STATUS_ONLINE", {
+            userId: res.locals.user.id,
+            status: "offline"
+        });
+    });
     res.clearCookie("tokenUser");
     res.redirect("/");
 });

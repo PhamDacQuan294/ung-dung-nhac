@@ -9,4 +9,6 @@ router.get("/request", controller.request);
 
 router.get("/accept", controller.accept);
 
+router.get("/friends", controller.friends);
+
 export const usersRoutes: Router = router;

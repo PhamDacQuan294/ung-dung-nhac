@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.accept = exports.request = exports.notFriend = void 0;
+exports.friends = exports.accept = exports.request = exports.notFriend = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const users_socket_1 = require("../../sockets/client/users.socket");
 const notFriend = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -74,3 +74,22 @@ const accept = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.accept = accept;
+const friends = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, users_socket_1.usersSocket)(req, res);
+    const userId = res.locals.user.id;
+    const myUser = yield user_model_1.default.findOne({
+        _id: userId
+    });
+    const friendList = myUser.friendList;
+    const friendListId = friendList.map(item => item.user_id);
+    const users = yield user_model_1.default.find({
+        _id: { $in: friendListId },
+        status: "active",
+        deleted: false
+    }).select("id avatar fullName statusOnline");
+    res.render("client/pages/users/friends", {
+        pageTitle: "Danh sách bạn bè",
+        users: users
+    });
+});
+exports.friends = friends;

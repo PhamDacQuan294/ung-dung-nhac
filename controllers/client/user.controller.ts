@@ -4,6 +4,7 @@ import md5 from "md5";
 import * as generateHelper from "../../helpers/generate";
 import * as sendMailHelper from "../../helpers/sendMail";
 import ForgotPassword from "../../models/forgot-password.model";
+import { Socket } from "socket.io";
 
 // [GET] /user/register
 export const register = async (req: Request, res: Response) => {
@@ -46,6 +47,7 @@ export const login = async (req: Request, res: Response) => {
 export const loginPost = async (req: Request, res: Response) => {
   const email = req.body.email;
   const password = req.body.password;
+  const _io = (global as any)._io;
 
   const user = await User.findOne({
     email: email,
@@ -72,11 +74,39 @@ export const loginPost = async (req: Request, res: Response) => {
 
   res.cookie("tokenUser", user.tokenUser);
   
+  await User.updateOne({
+    tokenUser: user.tokenUser
+  }, {
+    statusOnline: "online"
+  });
+
+  _io.once('connection', (socket: Socket) => {
+    socket.broadcast.emit("SERVER_RETURN_USER_STATUS_ONLINE", {
+      userId: user.id,
+      status: "online"
+    });
+  });
+
   res.redirect("/")
 }
 
 // [GET] /user/logout
 export const logout = async (req: Request, res: Response) => {
+  const _io = (global as any)._io;
+  
+  await User.updateOne({
+    tokenUser: req.cookies.tokenUser
+  }, {
+    statusOnline: "offline"
+  });
+
+  _io.once('connection', (socket) => {
+    socket.broadcast.emit("SERVER_RETURN_USER_STATUS_ONLINE", {
+      userId: res.locals.user.id,
+      status: "offline"
+    });
+  });
+
   res.clearCookie("tokenUser");
   res.redirect("/");
 }
