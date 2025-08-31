@@ -91,6 +91,23 @@ export const usersSocket = (req: Request, res: Response) => {
           $pull: { requestFriends: userId }
         });
       }
+
+      // Lấy ra độ dài acceptFriends của B và trả về cho B
+      const infoUserB = await User.findOne({
+        _id: userId
+      });
+      const lengthAcceptFriends = infoUserB.acceptFriends.length;
+
+      socket.broadcast.emit("SERVER_RETURN_LENGTH_ACCEPT_FRIEND", {
+        userId: userId,
+        lengthAcceptFriends: lengthAcceptFriends
+      });
+
+      // Lấy Id của A và trả về cho B
+      socket.broadcast.emit("SERVER_RETURN_USER_ID_CANCEL_FRIEND", {
+        userIdB: userId,
+        userIdA: myUserId
+      });
     });
 
     // Chức năng từ chối kết bạn
@@ -123,17 +140,6 @@ export const usersSocket = (req: Request, res: Response) => {
           $pull: { requestFriends: myUserId }
         });
       }
-
-      // Lấy ra độ dài acceptFriends của B và trả về cho B
-      const infoUserB = await User.findOne({
-        _id: userId
-      });
-      const lengthAcceptFriends = infoUserB.acceptFriends.length;
-
-      socket.broadcast.emit("SERVER_RETURN_LENGTH_ACCEPT_FRIEND", {
-        userId: userId,
-        lengthAcceptFriends: lengthAcceptFriends
-      });
     }); 
 
     // Chức năng chấp nhận kết bạn
