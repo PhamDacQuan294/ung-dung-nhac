@@ -4,8 +4,17 @@ import RoomChat from "../../models/rooms-chat.model";
 
 // [GET] /rooms-chat
 export const index = async (req: Request, res: Response) => {
+  const userId = res.locals.user.id;
+
+  const listRoomChat = await RoomChat.find({
+    "users.user_id": userId,
+    typeRoom: "group",
+    deleted: false
+  });
+
   res.render("client/pages/rooms-chat/index", {
-    pageTitle: "Danh sách phòng"
+    pageTitle: "Danh sách phòng",
+    listRoomChat: listRoomChat
   })
 }
 
@@ -31,7 +40,11 @@ export const create = async (req: Request, res: Response) => {
 // [POST] /rooms-chat/create
 export const createPost = async (req: Request, res: Response) => {
   const title = req.body.title;
-  const usersId = req.body.usersId;
+  let usersId = req.body.usersId;
+
+  if (!Array.isArray(usersId)) {
+    usersId = [usersId];
+  }
 
   const dataRoom = {
     title: title,

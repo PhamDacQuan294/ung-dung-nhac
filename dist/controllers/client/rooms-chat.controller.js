@@ -16,8 +16,15 @@ exports.createPost = exports.create = exports.index = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const rooms_chat_model_1 = __importDefault(require("../../models/rooms-chat.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = res.locals.user.id;
+    const listRoomChat = yield rooms_chat_model_1.default.find({
+        "users.user_id": userId,
+        typeRoom: "group",
+        deleted: false
+    });
     res.render("client/pages/rooms-chat/index", {
-        pageTitle: "Danh sách phòng"
+        pageTitle: "Danh sách phòng",
+        listRoomChat: listRoomChat
     });
 });
 exports.index = index;
@@ -38,7 +45,10 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.create = create;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const title = req.body.title;
-    const usersId = req.body.usersId;
+    let usersId = req.body.usersId;
+    if (!Array.isArray(usersId)) {
+        usersId = [usersId];
+    }
     const dataRoom = {
         title: title,
         typeRoom: "group",
