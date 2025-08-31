@@ -44,6 +44,7 @@ const settingMiddleware = __importStar(require("../../middlewares/client/setting
 const authMiddleware = __importStar(require("../../middlewares/client/auth.middleware"));
 const chat_route_1 = require("./chat.route");
 const users_route_1 = require("./users.route");
+const rooms_chat_route_1 = require("./rooms-chat.route");
 const clientRoutes = (app) => {
     app.use(userMiddleware.infoUser);
     app.use(settingMiddleware.settingGeneral);
@@ -55,5 +56,6 @@ const clientRoutes = (app) => {
     app.use("/user", user_route_1.userRoutes);
     app.use("/chat", authMiddleware.requireAuth, chat_route_1.chatRoutes);
     app.use("/users", authMiddleware.requireAuth, users_route_1.usersRoutes);
+    app.use("/rooms-chat", authMiddleware.requireAuth, rooms_chat_route_1.roomsChatRoutes);
 };
 exports.default = clientRoutes;
