@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersSocket = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
+const rooms_chat_model_1 = __importDefault(require("../../models/rooms-chat.model"));
 const usersSocket = (req, res) => {
     const _io = global._io;
     _io.once("connection", (socket) => {
@@ -125,6 +126,28 @@ const usersSocket = (req, res) => {
                 _id: myUserId,
                 acceptFriends: userId
             });
+            const existIdBinA = yield user_model_1.default.findOne({
+                _id: userId,
+                requestFriends: myUserId
+            });
+            let roomChat;
+            if (existIdAinB && existIdBinA) {
+                const dataRoom = {
+                    typeRoom: "friend",
+                    users: [
+                        {
+                            user_id: userId,
+                            role: "superAdmin"
+                        },
+                        {
+                            user_id: myUserId,
+                            role: "superAdmin"
+                        },
+                    ],
+                };
+                roomChat = new rooms_chat_model_1.default(dataRoom);
+                yield roomChat.save();
+            }
             if (existIdAinB) {
                 yield user_model_1.default.updateOne({
                     _id: myUserId
@@ -132,16 +155,12 @@ const usersSocket = (req, res) => {
                     $push: {
                         friendList: {
                             user_id: userId,
-                            room_chat_id: ""
+                            room_chat_id: roomChat.id
                         }
                     },
                     $pull: { acceptFriends: userId }
                 });
             }
-            const existIdBinA = yield user_model_1.default.findOne({
-                _id: userId,
-                requestFriends: myUserId
-            });
             if (existIdBinA) {
                 yield user_model_1.default.updateOne({
                     _id: userId
@@ -149,7 +168,7 @@ const usersSocket = (req, res) => {
                     $push: {
                         friendList: {
                             user_id: myUserId,
-                            room_chat_id: ""
+                            room_chat_id: roomChat.id
                         }
                     },
                     $pull: { requestFriends: myUserId }

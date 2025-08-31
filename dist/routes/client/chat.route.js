@@ -37,5 +37,6 @@ exports.chatRoutes = void 0;
 const express_1 = require("express");
 const router = (0, express_1.Router)();
 const controller = __importStar(require("../../controllers/client/chat.controller"));
-router.get("/", controller.index);
+const chatMiddleware = __importStar(require("../../middlewares/client/chat.middleware"));
+router.get("/:roomChatId", chatMiddleware.isAccess, controller.index);
 exports.chatRoutes = router;

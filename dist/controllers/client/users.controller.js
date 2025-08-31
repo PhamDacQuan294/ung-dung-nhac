@@ -87,6 +87,10 @@ const friends = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         status: "active",
         deleted: false
     }).select("id avatar fullName statusOnline");
+    for (const user of users) {
+        const infoFriend = friendList.find(friend => friend.user_id == user.id);
+        user["infoFriend"] = infoFriend;
+    }
     res.render("client/pages/users/friends", {
         pageTitle: "Danh sách bạn bè",
         users: users

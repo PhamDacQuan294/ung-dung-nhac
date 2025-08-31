@@ -12,26 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.index = void 0;
-const chat_socket_1 = require("../../sockets/client/chat.socket");
-const chat_model_1 = __importDefault(require("../../models/chat.model"));
-const user_model_1 = __importDefault(require("../../models/user.model"));
-const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.isAccess = void 0;
+const rooms_chat_model_1 = __importDefault(require("../../models/rooms-chat.model"));
+const isAccess = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const roomChatId = req.params.roomChatId;
-    (0, chat_socket_1.chatSocket)(req, res);
-    const chats = yield chat_model_1.default.find({
-        room_chat_id: roomChatId,
+    const userId = res.locals.user.id;
+    const existUserInRoomChat = yield rooms_chat_model_1.default.findOne({
+        _id: roomChatId,
+        "users.user_id": userId,
         deleted: false
     });
-    for (const chat of chats) {
-        const infoUser = yield user_model_1.default.findOne({
-            _id: chat.user_id
-        }).select("fullName");
-        chat["infoUser"] = infoUser;
+    if (existUserInRoomChat) {
+        next();
     }
-    res.render("client/pages/chat/index", {
-        pageTitle: "Chat",
-        chats: chats
-    });
+    else {
+        res.redirect("/");
+    }
 });
-exports.index = index;
+exports.isAccess = isAccess;

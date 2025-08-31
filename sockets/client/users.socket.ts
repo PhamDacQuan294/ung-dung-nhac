@@ -1,6 +1,7 @@
 import { Request,  Response } from "express";
 import { Socket } from "socket.io";
 import User from "../../models/user.model";
+import RoomChat from "../../models/rooms-chat.model";
 
 export const usersSocket = (req: Request, res: Response) => {
   const _io = (global as any)._io;
@@ -146,12 +147,40 @@ export const usersSocket = (req: Request, res: Response) => {
     socket.on("CLIENT_ACCEPT_FRIEND", async (userId) => {
       const myUserId = res.locals.user.id;
       
-      // Thêm {user_id, room_chat_id} của A vào friendList của B
-      // Xoá id của A trong acceptFriends của B
+      // Check exist
       const existIdAinB = await User.findOne({
         _id: myUserId,
         acceptFriends: userId
       });
+
+      const existIdBinA = await User.findOne({
+        _id: userId,
+        requestFriends: myUserId
+      });
+      // End check exist
+
+      // Tạo phòng chat chung
+      let roomChat ;
+
+      if(existIdAinB && existIdBinA) {
+        const dataRoom = {
+          typeRoom: "friend",
+          users: [
+            {
+              user_id: userId,
+              role: "superAdmin"
+            },   
+            {
+              user_id: myUserId,
+              role: "superAdmin"
+            },
+          ],
+        };
+
+        roomChat = new RoomChat(dataRoom);
+        await roomChat.save();
+      }
+      // End Tạo phòng chat chung
 
       if (existIdAinB) {
         await User.updateOne({
@@ -160,7 +189,7 @@ export const usersSocket = (req: Request, res: Response) => {
           $push: {
             friendList: {
               user_id: userId,
-              room_chat_id: ""
+              room_chat_id: roomChat.id
             }
           },
           $pull: { acceptFriends: userId }
@@ -169,11 +198,6 @@ export const usersSocket = (req: Request, res: Response) => {
 
       // Thêm {user_id, room_chat_id} của B vào friendList của A
       // xoá id của B trong requestFriends của A
-      const existIdBinA = await User.findOne({
-        _id: userId,
-        requestFriends: myUserId
-      });
-
       if (existIdBinA) {
         await User.updateOne({
           _id: userId
@@ -181,7 +205,7 @@ export const usersSocket = (req: Request, res: Response) => {
           $push: {
             friendList: {
               user_id: myUserId,
-              room_chat_id: ""
+              room_chat_id: roomChat.id
             }
           },
           $pull: { requestFriends: myUserId }

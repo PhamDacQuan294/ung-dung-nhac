@@ -106,6 +106,11 @@ export const friends = async (req: Request, res: Response) => {
     deleted: false  
   }).select("id avatar fullName statusOnline");
 
+  for (const user of users) {
+    const infoFriend = friendList.find(friend => friend.user_id == user.id);
+    user["infoFriend"] = infoFriend;
+  }
+
   res.render("client/pages/users/friends", {
     pageTitle: "Danh sách bạn bè",
     users: users

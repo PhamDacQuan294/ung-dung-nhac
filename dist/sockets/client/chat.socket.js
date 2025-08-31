@@ -17,22 +17,25 @@ const chat_model_1 = __importDefault(require("../../models/chat.model"));
 const chatSocket = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = res.locals.user.id;
     const fullName = res.locals.user.fullName;
+    const roomChatId = req.params.roomChatId;
     const _io = global._io;
     _io.once("connection", (socket) => {
+        socket.join(roomChatId);
         socket.on("CLIENT_SEND_MESSAGE", (content) => __awaiter(void 0, void 0, void 0, function* () {
             const chat = new chat_model_1.default({
                 user_id: userId,
+                room_chat_id: roomChatId,
                 content: content
             });
             yield chat.save();
-            _io.emit("SERVER_RETURN_MESSAGE", {
+            _io.to(roomChatId).emit("SERVER_RETURN_MESSAGE", {
                 userId: userId,
                 fullName: fullName,
                 content: content
             });
         }));
         socket.on("CLIENT_SEND_TYPING", (type) => __awaiter(void 0, void 0, void 0, function* () {
-            socket.broadcast.emit("SERVER_RETURN_TYPING", {
+            socket.broadcast.to(roomChatId).emit("SERVER_RETURN_TYPING", {
                 userId: userId,
                 fullName: fullName,
                 type: type
