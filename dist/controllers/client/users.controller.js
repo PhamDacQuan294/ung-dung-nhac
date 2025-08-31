@@ -23,11 +23,14 @@ const notFriend = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
     const requestFriends = myUser.requestFriends;
     const acceptFriends = myUser.acceptFriends;
+    const friendList = myUser.friendList;
+    const friendListId = friendList.map(item => item.user_id);
     const users = yield user_model_1.default.find({
         $and: [
             { _id: { $ne: userId } },
             { _id: { $nin: requestFriends } },
             { _id: { $nin: acceptFriends } },
+            { _id: { $nin: friendListId } }
         ],
         status: "active",
         deleted: false
