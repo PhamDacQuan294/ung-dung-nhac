@@ -12,6 +12,7 @@ import * as authMiddleware from "../../middlewares/admin/auth.middleware";
 import { myAccountRoutes } from "./my-account.route";
 import { settingRoutes } from "./setting.route";
 import { singerRoutes } from "./singer.route";
+import { userRoutes } from "./user.route";
 
 const adminRoutes = (app: Express): void => {
 
@@ -28,6 +29,8 @@ const adminRoutes = (app: Express): void => {
   app.use(`${PATH_ADMIN}/roles`, authMiddleware.requireAuth, roleRoutes);
 
   app.use(PATH_ADMIN + "/accounts", authMiddleware.requireAuth, accountRoutes);
+
+  app.use(PATH_ADMIN + "/users", authMiddleware.requireAuth, userRoutes);
 
   app.use(PATH_ADMIN + "/my-account", authMiddleware.requireAuth, myAccountRoutes);
 

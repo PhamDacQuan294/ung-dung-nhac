@@ -1,0 +1,65 @@
+extends ../../layouts/default.pug
+
+block main
+  h1(class="mb-4") Danh sách tài khoản
+
+  if(records)
+    .card.mb-3
+      .card-header Danh sách tài khoản
+      .card-body
+        table(
+          class="table table-hover table-sm"
+        )
+          thead 
+            tr 
+              th STT 
+              th Họ tên
+              th Email 
+              th Trạng thái
+              th Hành động
+          
+          tbody 
+            each item, index in records 
+              tr 
+                td #{index+1}
+                td #{item.fullName}
+                td #{item.email}
+                td 
+                  if (item.status === "active")
+                    a(
+                      href="javascript:;"
+                      class="badge badge-success"
+                      data-status=item.status
+                      data-id=item.id
+                      button-change-status
+                    ) Hoạt động
+                  else 
+                    a(
+                      href="javascript:;"
+                      class="badge badge-danger"
+                      data-status=item.status
+                      data-id=item.id
+                      button-change-status
+                    ) Dừng hoạt động
+                td
+                  button(
+                    class="btn btn-danger btn-sm ml-1"
+                    button-delete
+                    data-id=item.id
+                  ) Xoá
+  
+  form(
+    action=""
+    method="POST"
+    id="form-change-status"
+    data-path=`/${prefixAdmin}/users/change-status`
+  )
+
+  form(
+    action=""
+    method="POST"
+    id="form-delete-item"
+    data-path=`/${prefixAdmin}/users/delete`
+  )
+
+  script(src="/admin/js/topic.js")
