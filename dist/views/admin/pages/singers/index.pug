@@ -1,0 +1,129 @@
+extends ../../layouts/default.pug
+include ../../mixins/filter-status.pug
+include ../../mixins/search.pug
+include ../../mixins/pagination.pug
+include ../../mixins/form-change-multi.pug
+include ../../mixins/moment.pug
+
+block main
+  h1(class="mb-4") #{pageTitle}
+
+  if(role.permissions.includes("topics_view"))
+    .card.mb-3 
+      .card-header Bộ lọc và tìm kiếm
+      .card-body 
+        .row 
+          .col-6 
+            +filter-status(filterStatus)
+          .col-6 
+            +search(keyword)
+        
+    .card.mb-3
+      .card-header Danh sách
+      .card-body
+        .row
+          .col-8
+            if(role.permissions.includes("topics_edit"))
+              +form-change-multi(`/${prefixAdmin}/singers/change-multi`)
+          .col-4.text-right
+            if(role.permissions.includes("topics_create"))
+              a(
+                href=`/${prefixAdmin}/singers/create`
+                class=`btn btn-outline-success`
+              ) + Thêm mới
+        table(
+          class="table table-hover table-sm"
+          checkbox-multi
+        )
+          thead
+            tr
+              if(role.permissions.includes("topics_edit"))
+                th 
+                  input(type="checkbox" name="checkall")
+              th STT
+              th Hình ảnh
+              th Tên ca sỹ
+              th Trạng thái
+              th Người tạo
+              th Người cập nhật
+              th Hành động
+          tbody
+            each item, index in records
+              tr
+                if(role.permissions.includes("topics_edit"))
+                  td 
+                    input(
+                      type="checkbox"
+                      name="id"
+                      value=item.id
+                    )
+                td #{pagination.limitItems * (pagination.currentPage - 1) + (index + 1)}
+                td
+                  img(
+                    src=item.avatar
+                    alt=item.title
+                    width="100px"
+                    height="auto"
+                  )
+                td #{item.fullName}
+                td
+                  if(role.permissions.includes("topics_edit"))
+                    if (item.status === "active")
+                      a(
+                        href="javascript:;"
+                        data-status=item.status
+                        data-id=item.id
+                        button-change-status
+                        class="badge badge-success"
+                      ) Hoạt động
+                    else
+                      a(
+                        href="javascript:;"
+                        data-status=item.status
+                        data-id=item.id
+                        button-change-status
+                        class="badge badge-danger"
+                      ) Dừng hoạt động
+                td 
+                    p #{item.accountFullName}
+                    p
+                      +formatDate(item.createdBy.createdAt)
+                td 
+                    - const updatedBy = item.updatedBy.slice(-1)[0];
+                    if(updatedBy)
+                      p #{updatedBy.accountFullName}
+                      p
+                        +formatDateTime(updatedBy.updatedAt)
+                td
+                  a(
+                    class="btn btn-secondary btn-sm"
+                    href=`/${prefixAdmin}/singers/detail/${item.id}`
+                  ) Chi tiết
+                  if(role.permissions.includes("topics_edit"))
+                    a(
+                      class="btn btn-warning btn-sm ml-1"
+                      href=`/${prefixAdmin}/singers/edit/${item.id}`
+                    ) Sửa
+                  if(role.permissions.includes("topics_delete"))
+                    button(
+                      class="btn btn-danger btn-sm ml-1"
+                      button-delete
+                      data-id=item.id
+                    ) Xóa
+
+    +pagination(pagination)
+
+    form(
+      action=""
+      method="POST"
+      id="form-change-status"
+      data-path=`/${prefixAdmin}/singers/change-status`
+    )
+
+    form(
+      action=""
+      method="POST"
+      id="form-delete-item"
+      data-path=`/${prefixAdmin}/singers/delete`
+    )
+    script(src="/admin/js/singer.js")

@@ -1,0 +1,26 @@
+extends ../../layouts/default.pug
+
+block main 
+  if (singer.fullName) 
+    h1(class="mb-4") #{singer.fullName}
+
+  if (singer.avatar)
+    div(class="mb-4")
+      img(
+        src=singer.avatar
+        style="width: 100px"
+      )
+  
+  if (singer.status)
+    div(class="mb-4")
+      span Trang thái: 
+      if (singer.status === "active")
+        span(class="badge badge-success") Hoạt động
+      else 
+        span(class="badge badge-danger") Dừng hoạt động
+  a(
+    href=`/${prefixAdmin}/singers/edit/${singer.id}`
+    class="btn btn-warning"
+  ) chỉnh sửa
+  
+  script(src="/admin/js/singer.js")

@@ -1,0 +1,68 @@
+extends ../../layouts/default.pug
+
+block main 
+
+  h1(class="mb-4") Chỉnh sửa ca sỹ
+
+  form(
+    action=`/${prefixAdmin}/singers/edit/${singer.id}?_method=PATCH`
+    id="form-edit-singer"
+    method="POST"
+    enctype="multipart/form-data"
+  )
+    div(class="form-group")
+      lable(for="title") Tên ca sỹ
+      input(
+        type="text"
+        class="form-control"
+        id="title"
+        name="title"
+        value=singer.fullName
+      )
+
+    div(
+      class="form-group"
+      upload-image
+    )
+      label(for="avatar") Ảnh
+      input(
+        type="file"
+        class="form-control-file"
+        id="avatar"
+        name="avatar"
+        accept="image/*"
+        upload-image-input
+      )
+      img(
+        src=singer.avatar
+        class="image-preview"
+        upload-image-preview
+      )
+
+    div(class="form-group form-check form-check-inline")
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusActive"
+        name="status"
+        value="active"
+        checked=(singer.status == "active" ? true : false)
+      )
+      label(for="statusActive" class="form-check-label") Hoạt động
+
+    div(class="form-group form-check form-check-inline")
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusInactive"
+        name="status"
+        value="inactive"
+        checked=(singer.status == "inactive" ? true : false)
+      )
+      label(for="statusInactive" class="form-check-label") Dừng hoạt động
+
+    div(class="form-group")
+      button(
+        type="submit"
+        class="btn btn-primary"
+      ) Cập nhật

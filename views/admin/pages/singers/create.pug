@@ -1,0 +1,64 @@
+extends ../../layouts/default.pug
+
+block main 
+
+  h1(class="mb-4") Thêm mới ca sỹ
+
+  form(
+    action=`/${prefixAdmin}/singers/create`
+    id="form-create-singer"
+    method="POST"
+    enctype="multipart/form-data"
+  )
+    div(class="form-group")
+      lable(for="title") Tên ca sỹ
+      input(
+        type="text"
+        class="form-control"
+        id="title"
+        name="title"
+      )
+    div(
+      class="form-group"
+      upload-image
+    )
+      label(for="avatar") Ảnh
+      input(
+        type="file"
+        class="form-control-file"
+        id="avatar"
+        name="avatar"
+        accept="image/*"
+        upload-image-input
+      )
+      img(
+        src=""
+        class="image-preview"
+        upload-image-preview
+      )
+    div(class="form-group form-check form-check-inline")
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusActive"
+        name="status"
+        value="active"
+        checked
+      )
+      lable(for="statusActive" class="form-check-label") Hoạt động
+    div(class="form-group form-check form-check-inline")
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusActive"
+        name="status"
+        value="inactive"
+        checked
+      )
+      lable(for="statusInActive" class="form-check-label") Dừng hoạt động
+    div(class="form-group")
+      button(
+        type="submit"
+        class="btn btn-primary"
+      ) Tạo mới
+  script(src="/admin/js/singer.js")

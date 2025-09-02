@@ -44,6 +44,7 @@ const auth_route_1 = require("./auth.route");
 const authMiddleware = __importStar(require("../../middlewares/admin/auth.middleware"));
 const my_account_route_1 = require("./my-account.route");
 const setting_route_1 = require("./setting.route");
+const singer_route_1 = require("./singer.route");
 const adminRoutes = (app) => {
     const PATH_ADMIN = `/${config_1.systemConfig.prefixAdmin}`;
     app.use(`${PATH_ADMIN}/dashboard`, authMiddleware.requireAuth, dashboard_route_1.dashboardRoutes);
@@ -54,6 +55,7 @@ const adminRoutes = (app) => {
     app.use(PATH_ADMIN + "/accounts", authMiddleware.requireAuth, account_route_1.accountRoutes);
     app.use(PATH_ADMIN + "/my-account", authMiddleware.requireAuth, my_account_route_1.myAccountRoutes);
     app.use(PATH_ADMIN + "/settings", authMiddleware.requireAuth, setting_route_1.settingRoutes);
+    app.use(PATH_ADMIN + "/singers", authMiddleware.requireAuth, singer_route_1.singerRoutes);
     app.use(PATH_ADMIN + "/auth", auth_route_1.authRoutes);
 };
 exports.default = adminRoutes;
